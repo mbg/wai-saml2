@@ -1,0 +1,9 @@
+cradle:
+  stack:
+    - path: './src'
+      component: "wai-saml2:lib"
+    - path: './test'
+      component: "wai-saml2:test:wai-saml2-tests"
+
+dependencies:
+- package.yaml
