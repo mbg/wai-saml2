@@ -18,22 +18,17 @@ default-extensions:
 
 dependencies:
 - base
-- exceptions
 - text
 - bytestring
-- base16-bytestring
 - base64-bytestring
 - data-default
 - http-types
 - wai
 - wai-extra
 - vault
-- asn1-types
-- asn1-encoding
 - cryptonite
 - x509
 - x509-store
-- xml-types
 - xml-conduit
 - time
 - mtl
