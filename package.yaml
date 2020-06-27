@@ -21,7 +21,7 @@ dependencies:
 - text
 - bytestring
 - base64-bytestring
-- data-default
+- data-default-class
 - http-types
 - wai
 - wai-extra

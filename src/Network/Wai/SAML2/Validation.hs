@@ -26,7 +26,7 @@ import Crypto.Cipher.Types
 import qualified Data.ByteString as BS 
 import qualified Data.ByteString.Base64 as BS
 import qualified Data.ByteString.Lazy as LBS 
-import Data.Default
+import Data.Default.Class
 import Data.Time
 
 import Network.Wai.SAML2.XML.Encrypted
