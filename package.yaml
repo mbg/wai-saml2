@@ -10,6 +10,9 @@ category:            Security
 synopsis:            "SAML2 assertion validation as WAI middleware"
 description:         "A Haskell library which implements SAML2 assertion validation as WAI middleware"
 
+extra-source-files:
+- CHANGELOG.md
+
 default-extensions:
 - OverloadedStrings
 - MultiWayIf
