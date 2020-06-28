@@ -16,7 +16,7 @@ module Network.Wai.SAML2.Assertion (
     AttributeStatement,
     parseAttributeStatement,
     Assertion(..)
-) where 
+) where
 
 --------------------------------------------------------------------------------
 
@@ -28,7 +28,6 @@ import Data.Time
 import Text.XML.Cursor
 
 import Network.Wai.SAML2.XML
-import Data.ByteString (ByteString)
 
 --------------------------------------------------------------------------------
 

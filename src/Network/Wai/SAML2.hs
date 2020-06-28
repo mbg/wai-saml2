@@ -111,15 +111,16 @@ saml2Callback cfg callback app req sendResponse = do
             -- parse the request
             (body, _) <- parseRequestBodyEx bodyOpts lbsBackEnd req 
 
-            case body of 
-                -- extract the SAML response from the request body
-                [("SAMLResponse",val)] -> do 
+            case lookup "SAMLResponse" body of
+                Just val -> do
                     result <- validateResponse cfg val
                     let rs = lookup "RelayState" body
                     -- call the callback
                     callback  (Result rs <$> result) app req sendResponse
+                    
                 -- the request does not contain the expected payload
-                _ -> callback (Left InvalidRequest) app req sendResponse
+                Nothing -> callback (Left InvalidRequest) app req sendResponse
+                
        -- not one of the paths we need to handle, pass the request on to the
        -- inner application
        | otherwise -> app req sendResponse
