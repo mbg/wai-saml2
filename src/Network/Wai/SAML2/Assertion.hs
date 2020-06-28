@@ -15,8 +15,7 @@ module Network.Wai.SAML2.Assertion (
     AssertionAttribute(..),
     AttributeStatement,
     parseAttributeStatement,
-    Assertion(..),
-    AssertionWithState(..)
+    Assertion(..)
 ) where 
 
 --------------------------------------------------------------------------------
@@ -232,11 +231,3 @@ instance FromXML Assertion where
         }
 
 --------------------------------------------------------------------------------
-
--- | Represents a SAML2 assertion.
-data AssertionWithState = AssertionWithState {
-    -- | Assertion
-    assertion :: !Assertion,
-    -- | Relay state, as provided in the POST req
-    relayState :: !(Maybe ByteString)
-} deriving (Eq, Show)
