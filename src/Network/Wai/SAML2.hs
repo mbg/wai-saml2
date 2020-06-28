@@ -71,20 +71,20 @@ isPOST = (=="POST") . requestMethod
 -- >            -- 
 -- >            -- you may also want to return e.g. a HTTP 400 or 401 status
 -- >
--- >        callback (Right assertion) app req sendResponse = do   
+-- >        callback (Right result) app req sendResponse = do   
 -- >            -- a POST request was made to the assertion endpoint and the
 -- >            -- SAML2 response was successfully validated:        
 -- >            -- you *must* check that you have not encountered the 
 -- >            -- assertion ID before; we assume that there is a
 -- >            -- computation tryRetrieveAssertion which looks up
 -- >            -- assertions by ID in e.g. a database
--- >            result <- tryRetrieveAssertion (assertionId assertion)
+-- >            result <- tryRetrieveAssertion (assertionId (assertion result))
 -- >            
 -- >            case result of 
 -- >                Just something -> -- a replay attack has occurred
 -- >                Nothing -> do
 -- >                    -- store the assertion id somewhere
--- >                    storeAssertion (assertionId assertion)
+-- >                    storeAssertion (assertionId (assertion result))
 -- >                    
 -- >                    -- the assertion is valid and you can now e.g.
 -- >                    -- retrieve user data from your database
