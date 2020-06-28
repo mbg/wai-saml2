@@ -40,12 +40,14 @@ import Network.Wai.SAML2.Assertion
 import Network.Wai.SAML2.Error
 
 import System.IO.Unsafe (unsafePerformIO)
+import Data.ByteString (ByteString)
 
 --------------------------------------------------------------------------------
 
 -- | Checks whether the request method of @request@ is @"POST"@.
 isPOST :: Request -> Bool 
 isPOST = (=="POST") . requestMethod
+
 
 --------------------------------------------------------------------------------
 
@@ -94,7 +96,7 @@ isPOST = (=="POST") . requestMethod
 -- the given @config@. If the middleware intercepts a request to the 
 -- endpoint given by @config@, the result will be passed to @callback@.
 saml2Callback :: SAML2Config 
-              -> (Either SAML2Error Assertion -> Middleware) 
+              -> (Either SAML2Error AssertionWithState -> Middleware)
               -> Middleware
 saml2Callback cfg callback app req sendResponse = do 
     let path = rawPathInfo req 
@@ -114,9 +116,11 @@ saml2Callback cfg callback app req sendResponse = do
                 -- extract the SAML response from the request body
                 [("SAMLResponse",val)] -> do 
                     result <- validateResponse cfg val
-
+                    let relayState = lookup "RelayState" body
                     -- call the callback
-                    callback result app req sendResponse              
+                    case result of
+                      Left err -> callback (Left err) app req sendResponse
+                      Right assertion -> callback (Right $ AssertionWithState assertion relayState) app req sendResponse
                 
                 -- the request does not contain the expected payload
                 _ -> callback (Left InvalidRequest) app req sendResponse
@@ -166,6 +170,12 @@ saml2Callback cfg callback app req sendResponse = do
 assertionKey :: V.Key Assertion
 assertionKey = unsafePerformIO V.newKey
 
+-- | 'relayStateKey' is a vault key for retrieving the relay state
+-- from request vaults if the 'saml2Vault' 'Middleware' is used
+-- and the assertion is valid.
+relayStateKey :: V.Key (Maybe ByteString)
+relayStateKey = unsafePerformIO V.newKey
+
 -- | 'errorKey' is a vault key for retrieving SAML2 errors from request vaults
 -- if the 'saml2Vault' 'Middleware' is used.
 errorKey :: V.Key SAML2Error
@@ -182,9 +192,10 @@ saml2Vault cfg = saml2Callback cfg callback
             app req{
                 vault = V.insert errorKey err (vault req)
             } sendResponse 
-          callback (Right assertion) app req sendResponse = do 
-            app req{ 
-                vault = V.insert assertionKey assertion (vault req) 
+          callback (Right assertionWithState) app req sendResponse = do
+            let vault' = V.insert assertionKey (assertion assertionWithState) (vault req)
+            app req{
+                vault = V.insert relayStateKey (relayState assertionWithState) vault'
             } sendResponse
 
 --------------------------------------------------------------------------------
