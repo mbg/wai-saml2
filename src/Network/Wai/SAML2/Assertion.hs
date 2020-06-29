@@ -16,7 +16,7 @@ module Network.Wai.SAML2.Assertion (
     AttributeStatement,
     parseAttributeStatement,
     Assertion(..)
-) where 
+) where
 
 --------------------------------------------------------------------------------
 
