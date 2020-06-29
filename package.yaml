@@ -11,6 +11,7 @@ synopsis:            "SAML2 assertion validation as WAI middleware"
 description:         "A Haskell library which implements SAML2 assertion validation as WAI middleware"
 
 extra-source-files:
+- README.md
 - CHANGELOG.md
 
 default-extensions:
