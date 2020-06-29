@@ -21,6 +21,7 @@ module Network.Wai.SAML2 (
     assertionKey,
     errorKey,
     saml2Vault,
+    relayStateKey,
 
     -- * Re-exports
     module Network.Wai.SAML2.Config,
@@ -31,6 +32,7 @@ module Network.Wai.SAML2 (
 --------------------------------------------------------------------------------
 
 import qualified Data.ByteString as BS
+import Data.Maybe (fromMaybe)
 import qualified Data.Vault.Lazy as V
 
 import Network.Wai 
@@ -169,7 +171,7 @@ assertionKey = unsafePerformIO V.newKey
 -- | 'relayStateKey' is a vault key for retrieving the relay state
 -- from request vaults if the 'saml2Vault' 'Middleware' is used
 -- and the assertion is valid.
-relayStateKey :: V.Key (Maybe BS.ByteString)
+relayStateKey :: V.Key BS.ByteString
 relayStateKey = unsafePerformIO V.newKey
 
 -- | 'errorKey' is a vault key for retrieving SAML2 errors from request vaults
@@ -189,9 +191,13 @@ saml2Vault cfg = saml2Callback cfg callback
                 vault = V.insert errorKey err (vault req)
             } sendResponse 
           callback (Right result) app req sendResponse = do
+            let mRelayState = relayState result 
+            let vlt = vault req
+
             app req{
                 vault = V.insert assertionKey (assertion result)
-                      $ V.insert relayStateKey (relayState result) (vault req)
+                      $ fromMaybe vlt $ mRelayState >>= \rs -> 
+                            pure $ V.insert relayStateKey rs vlt
             } sendResponse
 
 --------------------------------------------------------------------------------
@@ -203,3 +209,5 @@ data Result = Result {
     -- | The assertion obtained from the response that has been validated.
     assertion :: !Assertion
 } deriving (Eq, Show)
+
+--------------------------------------------------------------------------------
