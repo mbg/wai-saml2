@@ -13,6 +13,7 @@ module Network.Wai.SAML2 (
     -- * Callback-based middleware
     --
     -- $callbackBasedMiddleware
+    Result(..),
     saml2Callback,
 
     -- * Vault-based middleware
