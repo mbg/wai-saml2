@@ -2,6 +2,7 @@
 
 ![GitHub](https://img.shields.io/github/license/mbg/wai-saml2)
 ![Haskell CI](https://github.com/mbg/wai-saml2/workflows/Haskell/badge.svg?branch=master)
+![stackage-nightly](https://github.com/mbg/wai-saml2/workflows/stackage-nightly/badge.svg)
 
 A Haskell library which implements SAML2 assertion validation as WAI middleware. This can be used by a Haskell web application (the service provider, SP) to perform identity provider (IdP) initiated authentication, i.e. SAML2-based authentication where the authentication begins at the IdP-end, the IdP authenticates the user, and then gets the user to submit a SAML2 assertion back to the SP (known as "unsolicited SSO" within e.g. [the Shibboleth project](https://wiki.shibboleth.net/confluence/display/IDP30/UnsolicitedSSOConfiguration#UnsolicitedSSOConfiguration-SAML2.0)). 
 
