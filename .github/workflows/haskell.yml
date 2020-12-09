@@ -1,6 +1,17 @@
 name: Haskell
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [master]
+    tags:
+      - 'v*'
+    paths:
+      - '.github/workflows/**'
+      - 'src/**'
+      - 'package.yaml'
+      - 'stack*.yaml'
+  pull_request:
+    branches: [master]
 
 jobs:
   build:
