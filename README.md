@@ -18,7 +18,7 @@ There are currently a number of limitations to this library:
 
 The library is estimated to be sufficiently robust for use in a production environment. If you wish to implement this middleware, please note the following:
 
-* You __must__ store IDs of assertions you see. If an assertion is successfully validated by this library, you __must__ check that you have not previous seen the assertion ID in order to prevent replay attacks.
+* You __must__ store IDs of assertions you see. If an assertion is successfully validated by this library, you __must__ check that you have not previously seen the assertion ID in order to prevent replay attacks.
 
 * You __must not__ expose any errors to a client as that could severely compromise the security of the system as attackers may be able to use the errors to narrow down valid SAML responses. You __should__ log and monitor errors though as they may indicate attacks on your system. Ensure that log files containing errors from the SAML2 middleware are stored securely.
 
