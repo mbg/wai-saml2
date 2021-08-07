@@ -19,6 +19,7 @@ import Control.Monad.Except
 import Crypto.Error
 import Crypto.Hash
 import qualified Crypto.PubKey.RSA.OAEP as OAEP
+import Crypto.PubKey.RSA (PrivateKey)
 import Crypto.PubKey.RSA.PKCS15 as PKCS15
 import Crypto.Cipher.AES
 import Crypto.Cipher.Types
@@ -44,9 +45,11 @@ import qualified Text.XML.Cursor as XML
 
 -- | 'validateResponse' @cfg responseData@ validates a SAML2 response contained
 -- in Base64-encoded @responseData@. 
-validateResponse :: SAML2Config 
-                 -> BS.ByteString 
-                 -> IO (Either SAML2Error Assertion)
+validateResponse 
+    :: HasSaml2Config opts 
+    => SAML2Config opts
+    -> BS.ByteString 
+    -> IO (Either SAML2Error Assertion)
 validateResponse cfg responseData = runExceptT $ do 
     -- get the current time
     now <- liftIO $ getCurrentTime 
@@ -174,15 +177,36 @@ validateResponse cfg responseData = runExceptT $ do
     then pure ()
     else throwError InvalidSignature  
 
+    -- retrieve the assertion; if it is encrypted, decrypt it first
+    assertion <- case spPrivateKey cfg of 
+        Nothing -> error "Unencrypted assertions are not yet supported"
+        Just pk -> decryptAssertion pk samlResponse 
+
+    -- validate that the assertion is valid at this point in time
+    let Conditions{..} = assertionConditions assertion
+
+    if (now < conditionsNotBefore || now >= conditionsNotOnOrAfter) &&
+        not (saml2DisableTimeValidation cfg)
+    then throwError NotValid
+    else pure ()
+
+    -- all checks out, return the assertion
+    pure assertion
+
+-- | `decryptAssertion` @spPrivateKey response@ tries to decrypt an encrypted 
+-- assertion contained in @response@ using the service provider's private key
+-- given by @spPrivateKey@.
+decryptAssertion :: PrivateKey -> Response -> ExceptT SAML2Error IO Assertion 
+decryptAssertion pk samlResponse = do
     --  ***ASSERTION DECRYPTION***
     -- the SAML assertion is AES-encrypted and we need to acquire the key
     -- to decrypt it; the key itself is RSA-encrypted:
-    -- get the private key from the configuration and use it to decrypt
+    -- we have the private key from the configuration and use it to decrypt
     -- the key used to decrypt the assertion
-    let pk = saml2PrivateKey cfg
     let encryptedAssertion = responseEncryptedAssertion samlResponse
     
-    oaepResult <- liftIO $ OAEP.decryptSafer (OAEP.defaultOAEPParams SHA1) pk 
+    oaepResult <- liftIO 
+        $ OAEP.decryptSafer (OAEP.defaultOAEPParams SHA1) pk 
         $ BS.decodeLenient 
         $ cipherValue 
         $ encryptedKeyCipher 
@@ -221,7 +245,7 @@ validateResponse cfg responseData = runExceptT $ do
                         Just xmlData -> pure xmlData
 
     -- try to parse the assertion that we decrypted earlier
-    assertion <- case XML.parseLBS def (LBS.fromStrict xmlData) of 
+    case XML.parseLBS def (LBS.fromStrict xmlData) of 
         Left err -> throwError $ InvalidAssertionXml err 
         Right assertDoc -> do
             -- try to convert the assertion document into a more
@@ -232,17 +256,6 @@ validateResponse cfg responseData = runExceptT $ do
             case assertParseResult of 
                 Left err -> throwError $ InvalidAssertion err
                 Right assertion -> pure assertion 
-
-    -- validate that the assertion is valid at this point in time
-    let Conditions{..} = assertionConditions assertion
-
-    if (now < conditionsNotBefore || now >= conditionsNotOnOrAfter) &&
-        not (saml2DisableTimeValidation cfg)
-    then throwError NotValid
-    else pure ()
-
-    -- all checks out, return the assertion
-    pure assertion
 
 -- | 'ansiX923' @plaintext@ removes ANSI X9.23 padding from @plaintext@. 
 -- See https://en.wikipedia.org/wiki/Padding_(cryptography)#ANSI_X9.23

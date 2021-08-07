@@ -97,9 +97,11 @@ isPOST = (=="POST") . requestMethod
 -- | 'saml2Callback' @config callback@ produces SAML2 'Middleware' for
 -- the given @config@. If the middleware intercepts a request to the 
 -- endpoint given by @config@, the result will be passed to @callback@.
-saml2Callback :: SAML2Config 
-              -> (Either SAML2Error Result -> Middleware)
-              -> Middleware
+saml2Callback 
+    :: HasSaml2Config opts
+    => SAML2Config opts
+    -> (Either SAML2Error Result -> Middleware)
+    -> Middleware
 saml2Callback cfg callback app req sendResponse = do 
     let path = rawPathInfo req 
 
@@ -181,7 +183,7 @@ errorKey :: V.Key SAML2Error
 errorKey = unsafePerformIO V.newKey
 
 -- | 'saml2Vault' @config@ produces SAML2 'Middleware' for the given @config@.
-saml2Vault :: SAML2Config -> Middleware
+saml2Vault :: HasSaml2Config opts => SAML2Config opts -> Middleware
 saml2Vault cfg = saml2Callback cfg callback 
     -- if the middleware intercepts a request containing a SAML2 response at 
     -- the configured endpoint, the outcome of processing response will be
