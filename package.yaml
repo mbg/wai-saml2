@@ -3,7 +3,7 @@ version:             0.2.1.2
 github:              "mbg/wai-saml2"
 license:             MIT
 author:              "Michael B. Gale"
-maintainer:          "m.gale@warwick.ac.uk"
+maintainer:          "github@michael-gale.co.uk"
 copyright:           "Copyright (c) Michael B. Gale"
 
 category:            Security
