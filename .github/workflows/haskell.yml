@@ -15,21 +15,22 @@ on:
 
 jobs:
   build:
-    strategy: 
+    strategy:
       matrix:
-        resolver: 
-          - stack
+        resolver:
+          - stack-lts-17.14
+          - stack-lts-16.1
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1  
-    
-    - name: Install system dependencies 
+    - uses: actions/checkout@v2
+
+    - name: Install system dependencies
       run: |
         sudo apt-get install libxml2-dev
 
-    - name: Install the Haskell Stack 
+    - name: Install the Haskell Stack
       run: |
         mkdir -p ~/.local/bin
         curl -L https://get.haskellstack.org/stable/linux-x86_64.tar.gz | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
@@ -44,7 +45,7 @@ jobs:
             ${{ runner.os }}-${{ matrix.resolver }}
             ${{ runner.os }}-
 
-    - name: Install GHC 
+    - name: Install GHC
       run: |
         export PATH=$HOME/.local/bin:$PATH
         stack --stack-yaml=${{ matrix.resolver }}.yaml --no-terminal --install-ghc setup
@@ -53,8 +54,8 @@ jobs:
       run: |
         export PATH=$HOME/.local/bin:$PATH
         stack --stack-yaml=${{ matrix.resolver }}.yaml --no-terminal build --only-dependencies --fast
-        
-    - name: Build 
+
+    - name: Build
       run: |
         export PATH=$HOME/.local/bin:$PATH
         stack --stack-yaml=${{ matrix.resolver }}.yaml --no-terminal build --fast
