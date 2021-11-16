@@ -1,0 +1,7 @@
+resolver: lts-17.14
+compiler: ghc-8.10.7
+packages:
+- .
+
+extra-deps:
+- c14n-0.1.0.1@sha256:c56a513c1363d126ee704656b59d2e2af1cfe878587a97cb69ab0122b82e2d4d,1371
