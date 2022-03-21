@@ -37,7 +37,7 @@ jobs:
 
       - name: Cache .stack
         id: cache-stack
-        uses: actions/cache@v1
+        uses: actions/cache@v3.0.0
         with:
           path: ${{ steps.install-haskell.outputs.stack-root }}
           key: ${{ runner.os }}-${{ matrix.resolver }}-${{ hashFiles(format('{0}.yaml', matrix.resolver)) }}-${{ hashFiles('wai-saml2.cabal') }}
