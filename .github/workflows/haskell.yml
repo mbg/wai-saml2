@@ -18,6 +18,8 @@ jobs:
     strategy:
       matrix:
         resolver:
+          - stack-lts-19
+          - stack-lts-18
           - stack-lts-17.14
           - stack-lts-16.1
 
