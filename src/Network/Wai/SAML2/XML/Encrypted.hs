@@ -12,7 +12,7 @@ module Network.Wai.SAML2.XML.Encrypted (
     EncryptionMethod(..),
     EncryptedKey(..),
     EncryptedAssertion(..)
-) where 
+) where
 
 --------------------------------------------------------------------------------
 
@@ -32,11 +32,11 @@ data CipherData = CipherData {
     cipherValue :: !BS.ByteString
 } deriving (Eq, Show)
 
-instance FromXML CipherData where 
+instance FromXML CipherData where
     parseXML cursor = pure CipherData{
         cipherValue = encodeUtf8
-                    $ T.concat 
-                    $ cursor 
+                    $ T.concat
+                    $ cursor
                     $/ element (xencName "CipherValue")
                     &/ content
     }
@@ -51,15 +51,15 @@ data EncryptionMethod = EncryptionMethod {
     encryptionMethodDigestAlgorithm :: !(Maybe T.Text)
 } deriving (Eq, Show)
 
-instance FromXML EncryptionMethod where 
+instance FromXML EncryptionMethod where
     parseXML cursor = pure EncryptionMethod{
-        encryptionMethodAlgorithm = 
+        encryptionMethodAlgorithm =
             T.concat $ attribute "Algorithm" cursor,
-        encryptionMethodDigestAlgorithm = 
-            toMaybeText $ cursor 
-                        $/ element (dsName "DigestMethod") 
+        encryptionMethodDigestAlgorithm =
+            toMaybeText $ cursor
+                        $/ element (dsName "DigestMethod")
                        >=> attribute "Algorithm"
-    } 
+    }
 
 --------------------------------------------------------------------------------
 
@@ -77,20 +77,20 @@ data EncryptedKey = EncryptedKey {
     encryptedKeyCipher :: !CipherData
 } deriving (Eq, Show)
 
-instance FromXML EncryptedKey where 
+instance FromXML EncryptedKey where
     parseXML cursor =  do
-        method <- oneOrFail "EncryptionMethod is required" $
-            cursor $/ element (xencName "EncryptionMethod") 
-                >=> parseXML
+        method <- oneOrFail "EncryptionMethod is required" (
+            cursor $/ element (xencName "EncryptionMethod")
+                ) >>= parseXML
 
-        keyData <- oneOrFail "KeyInfo is required" $
-            cursor $/ element (dsName "KeyInfo") 
-                >=> parseXML
+        keyData <- oneOrFail "KeyInfo is required" (
+            cursor $/ element (dsName "KeyInfo")
+                ) >>= parseXML
 
-        cipher <- oneOrFail "CipherData is required" $
+        cipher <- oneOrFail "CipherData is required" (
             cursor $/ element (xencName "CipherData")
-                >=> parseXML
-        
+                ) >>= parseXML
+
         pure EncryptedKey{
             encryptedKeyId = T.concat $ attribute "Id" cursor,
             encryptedKeyRecipient = T.concat $ attribute "Recipient" cursor,
@@ -111,23 +111,23 @@ data EncryptedAssertion = EncryptedAssertion {
     encryptedAssertionCipher :: !CipherData
 } deriving (Eq, Show)
 
-instance FromXML EncryptedAssertion where 
+instance FromXML EncryptedAssertion where
     parseXML cursor = do
-        algorithm <- oneOrFail "Algorithm is required" 
-                 $   cursor 
+        algorithm <- oneOrFail "Algorithm is required"
+                 (   cursor
                  $/  element (xencName "EncryptionMethod")
-                 >=> parseXML  
+                 ) >>= parseXML
 
-        keyInfo <- oneOrFail "KeyInfo is required" 
-               $   cursor 
-               $/  element (dsName "KeyInfo") 
-               &/  element (xencName "EncryptedKey") 
-               >=> parseXML
+        keyInfo <- oneOrFail "KeyInfo is required"
+               (   cursor
+               $/  element (dsName "KeyInfo")
+               &/  element (xencName "EncryptedKey")
+               ) >>= parseXML
 
-        cipher <- oneOrFail "CipherData is required" 
-               $  cursor 
+        cipher <- oneOrFail "CipherData is required"
+               (  cursor
               $/  element (xencName "CipherData")
-              >=> parseXML 
+              ) >>= parseXML
 
         pure EncryptedAssertion{
             encryptedAssertionAlgorithm = algorithm,

@@ -63,13 +63,13 @@ instance FromXML Response where
             Just sc -> pure sc
 
         encAssertion <- oneOrFail "EncryptedAssertion is required" 
-                    $   cursor
+                    (   cursor
                     $/  element (saml2Name "EncryptedAssertion")
                     &/  element (xencName "EncryptedData")
-                    >=> parseXML
+                    ) >>= parseXML
 
-        signature <- oneOrFail "Signature is required" $
-            cursor $/ element (dsName "Signature") >=> parseXML
+        signature <- oneOrFail "Signature is required" (
+            cursor $/ element (dsName "Signature") ) >>= parseXML
 
         pure Response{
             responseDestination = T.concat $ attribute "Destination" cursor,
@@ -98,7 +98,7 @@ removeSignature (Document prologue root misc) =
     in Document prologue (Element n attr (filter isNotSignature ns)) misc
           
 -- | Returns all nodes at @cursor@.
-nodes :: Cursor -> [Node]
+nodes :: MonadFail m => Cursor -> m Node
 nodes = pure . node 
 
 -- | 'extractSignedInfo' @cursor@ extracts the SignedInfo element from the 
@@ -106,10 +106,10 @@ nodes = pure . node
 extractSignedInfo :: MonadFail m => Cursor -> m Element
 extractSignedInfo cursor = do 
     NodeElement signedInfo <- oneOrFail "SignedInfo is required" 
-                            $ cursor 
+                            ( cursor
                            $/ element (dsName "Signature") 
                            &/ element (dsName "SignedInfo") 
-                          >=> nodes
+                          ) >>= nodes
     pure signedInfo
 
 --------------------------------------------------------------------------------
