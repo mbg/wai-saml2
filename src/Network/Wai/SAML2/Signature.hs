@@ -83,9 +83,9 @@ instance FromXML Reference where
         -- the reference starts with a #, drop it
         let uri = T.drop 1 $ T.concat $ attribute "URI" cursor
 
-        digestMethod <- oneOrFail "DigestMethod is required" $
+        digestMethod <- oneOrFail "DigestMethod is required" (
             cursor $/ element (dsName "DigestMethod") 
-            >=> parseXML
+            ) >>= parseXML
 
         let digestValue = encodeUtf8 $ T.concat $
                 cursor $/ element (dsName "DigestValue") &/ content
@@ -113,21 +113,21 @@ instance FromXML SignedInfo where
     parseXML cursor = do 
         canonicalisationMethod <- 
                 oneOrFail "CanonicalizationMethod is required"
-              $ cursor 
+              ( cursor
              $/ element (dsName "CanonicalizationMethod") 
-            >=> parseXML
+              ) >>= parseXML
 
         signatureMethod <- 
                 oneOrFail "SignatureMethod is required" 
-              $ cursor 
+              ( cursor
              $/ element (dsName "SignatureMethod")
-            >=> parseXML
+            ) >>= parseXML
 
         reference <- 
                 oneOrFail "Reference is required" 
-              $ cursor 
+              ( cursor
              $/ element (dsName "Reference")
-            >=> parseXML
+            ) >>= parseXML
 
         pure SignedInfo{
             signedInfoCanonicalisationMethod = canonicalisationMethod,
@@ -145,8 +145,8 @@ data Signature = Signature {
 
 instance FromXML Signature where 
     parseXML cursor = do 
-        info <- oneOrFail "SignedInfo is required" $ 
-            cursor $/ element (dsName "SignedInfo") >=> parseXML
+        info <- oneOrFail "SignedInfo is required" (
+            cursor $/ element (dsName "SignedInfo") ) >>= parseXML
 
         let value = encodeUtf8 $ T.concat $
                 cursor $/ element (dsName "SignatureValue") &/ content
