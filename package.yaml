@@ -43,3 +43,18 @@ library:
     ghc-options:
     - -W
 
+tests:
+  parser:
+    main: parser.hs
+    source-dirs: tests
+    ghc-options: -Wall -Wcompat
+    language: Haskell2010
+    dependencies:
+    - base
+    - bytestring
+    - filepath
+    - pretty-show
+    - tasty
+    - tasty-golden
+    - wai-saml2
+    - xml-conduit
