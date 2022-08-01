@@ -15,7 +15,7 @@ module Network.Wai.SAML2.Response (
     -- * Re-exports
     module Network.Wai.SAML2.StatusCode,
     module Network.Wai.SAML2.Signature
-) where 
+) where
 
 --------------------------------------------------------------------------------
 
@@ -52,20 +52,19 @@ data Response = Response {
     responseEncryptedAssertion :: !EncryptedAssertion
 } deriving (Eq, Show)
 
-instance FromXML Response where 
+instance FromXML Response where
     parseXML cursor = do
-        issueInstant <- parseUTCTime 
-                      $ T.concat 
+        issueInstant <- parseUTCTime
+                      $ T.concat
                       $ attribute "IssueInstant" cursor
 
         statusCode <- case parseXML cursor of
             Nothing -> fail "Invalid status code"
             Just sc -> pure sc
 
-        encAssertion <- oneOrFail "EncryptedAssertion is required" 
+        encAssertion <- oneOrFail "EncryptedAssertion is required"
                     (   cursor
                     $/  element (saml2Name "EncryptedAssertion")
-                    &/  element (xencName "EncryptedData")
                     ) >>= parseXML
 
         signature <- oneOrFail "Signature is required" (
@@ -76,39 +75,39 @@ instance FromXML Response where
             responseId = T.concat $ attribute "ID" cursor,
             responseIssueInstant = issueInstant,
             responseVersion = T.concat $ attribute "Version" cursor,
-            responseIssuer = T.concat $ 
+            responseIssuer = T.concat $
                 cursor $/ element (saml2Name "Issuer") &/ content,
             responseStatusCode = statusCode,
             responseSignature = signature,
             responseEncryptedAssertion = encAssertion
         }
-    
+
 --------------------------------------------------------------------------------
 
 -- | Returns 'True' if the argument is not a @<Signature>@ element.
-isNotSignature :: Node -> Bool 
-isNotSignature (NodeElement e) = elementName e /= dsName "Signature" 
+isNotSignature :: Node -> Bool
+isNotSignature (NodeElement e) = elementName e /= dsName "Signature"
 isNotSignature _ = True
 
 -- | 'removeSignature' @document@ removes all @<Signature>@ elements from
 -- @document@ and returns the resulting document.
 removeSignature :: Document -> Document
-removeSignature (Document prologue root misc) = 
+removeSignature (Document prologue root misc) =
     let Element n attr ns = root
     in Document prologue (Element n attr (filter isNotSignature ns)) misc
-          
+
 -- | Returns all nodes at @cursor@.
 nodes :: MonadFail m => Cursor -> m Node
-nodes = pure . node 
+nodes = pure . node
 
--- | 'extractSignedInfo' @cursor@ extracts the SignedInfo element from the 
+-- | 'extractSignedInfo' @cursor@ extracts the SignedInfo element from the
 -- document reprsented by @cursor@.
 extractSignedInfo :: MonadFail m => Cursor -> m Element
-extractSignedInfo cursor = do 
-    NodeElement signedInfo <- oneOrFail "SignedInfo is required" 
+extractSignedInfo cursor = do
+    NodeElement signedInfo <- oneOrFail "SignedInfo is required"
                             ( cursor
-                           $/ element (dsName "Signature") 
-                           &/ element (dsName "SignedInfo") 
+                           $/ element (dsName "Signature")
+                           &/ element (dsName "SignedInfo")
                           ) >>= nodes
     pure signedInfo
 
