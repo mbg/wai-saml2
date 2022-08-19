@@ -79,22 +79,35 @@ instance FromXML SubjectConfirmation where
                       >=> attribute "Recipient"
         }
 
+
+-- | The "NameID" of subject.
+data SubjectNameID = SubjectNameID {
+    nameIdValue :: !T.Text
+} deriving (Eq, Show)
+
+instance FromXML SubjectNameID where 
+    parseXML cursor = do 
+        pure SubjectNameID {
+            nameIdValue = T.concat $ cursor $/ content
+        }
+
 -- | The subject of the assertion.
 data Subject = Subject {
     -- | The list of subject confirmation elements, if any.
     subjectConfirmations :: ![SubjectConfirmation],
-    -- | The name identifier of subject.
-    subjectNameId :: !T.Text
+    subjectNameId :: !SubjectNameID
 } deriving (Eq, Show)
 
 instance FromXML Subject where 
     parseXML cursor = do 
         confirmations <- sequence $ 
             cursor $/ element (saml2Name "SubjectConfirmation") &| parseXML
+        nameId <- oneOrFail "SubjectNameID is required" $ 
+            cursor $/ element (saml2Name "NameID") >=> parseXML
 
         pure Subject{
             subjectConfirmations = confirmations,
-            subjectNameId        = T.concat $ cursor $/ element (saml2Name "NameID") &/ content
+            subjectNameId        = nameId
         }
 
 --------------------------------------------------------------------------------
