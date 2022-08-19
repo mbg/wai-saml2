@@ -45,10 +45,9 @@ library:
 
 tests:
   parser:
-    main: parser.hs
+    main: Parser.hs
     source-dirs: tests
     ghc-options: -Wall -Wcompat
-    language: Haskell2010
     dependencies:
     - base
     - bytestring
