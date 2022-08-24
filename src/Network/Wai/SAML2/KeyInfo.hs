@@ -8,7 +8,7 @@
 -- | Types to represent keys that are contained in SAML2 responses.
 module Network.Wai.SAML2.KeyInfo (
     KeyInfo(..)
-) where 
+) where
 
 --------------------------------------------------------------------------------
 
@@ -28,13 +28,13 @@ data KeyInfo = KeyInfo {
     keyInfoCertificate :: BS.ByteString
 } deriving (Eq, Show)
 
-instance FromXML KeyInfo where 
+instance FromXML KeyInfo where
     parseXML cursor = pure KeyInfo{
-        keyInfoCertificate = 
+        keyInfoCertificate =
             encodeUtf8 $ T.concat $ cursor
                       $/ element (dsName "X509Data")
                       &/ element (dsName "X509Certificate")
                       &/ content
     }
-    
+
 --------------------------------------------------------------------------------

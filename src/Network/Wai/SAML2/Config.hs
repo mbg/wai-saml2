@@ -9,7 +9,7 @@
 module Network.Wai.SAML2.Config (
     SAML2Config(..),
     saml2Config
-) where 
+) where
 
 --------------------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ data SAML2Config = SAML2Config {
     -- | The path relative to the root of the web application at which the
     -- middleware should listen for SAML2 assertions (e.g. /sso/assert).
     saml2AssertionPath :: !BS.ByteString,
-    -- | The service provider's private key, used to decrypt data from 
+    -- | The service provider's private key, used to decrypt data from
     -- the identity provider.
     saml2PrivateKey :: !PrivateKey,
     -- | The identity provider's public key, used to validate
@@ -42,8 +42,8 @@ data SAML2Config = SAML2Config {
 }
 
 -- | 'saml2Config' @privateKey publicKey@ constructs a 'SAML2Config' value
--- with the most basic set of options possible using @privateKey@ as the 
--- SP's private key and @publicKey@ as the IdP's public key. You should 
+-- with the most basic set of options possible using @privateKey@ as the
+-- SP's private key and @publicKey@ as the IdP's public key. You should
 -- almost certainly change the resulting settings.
 saml2Config :: PrivateKey -> PublicKey -> SAML2Config
 saml2Config privKey pubKey = SAML2Config{

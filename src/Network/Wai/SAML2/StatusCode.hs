@@ -8,7 +8,7 @@
 -- | SAML2 status codes.
 module Network.Wai.SAML2.StatusCode (
     StatusCode(..)
-) where 
+) where
 
 --------------------------------------------------------------------------------
 
@@ -24,20 +24,20 @@ import Network.Wai.SAML2.XML
 
 -- | Enumerates SAML2 status codes.
 data StatusCode
-    -- | The response indicates success!  
+    -- | The response indicates success!
     = Success
     deriving (Eq, Show)
 
-instance FromXML StatusCode where 
-    parseXML cursor =  
-        let value = T.concat 
-                $   cursor 
+instance FromXML StatusCode where
+    parseXML cursor =
+        let value = T.concat
+                $   cursor
                 $/  element (saml2pName "Status")
-                &/  element (saml2pName "StatusCode") 
+                &/  element (saml2pName "StatusCode")
                 >=> attribute "Value"
         in case value of
             "urn:oasis:names:tc:SAML:2.0:status:Success" -> pure Success
             _ -> fail "Not a valid status code."
-    
+
 
 --------------------------------------------------------------------------------

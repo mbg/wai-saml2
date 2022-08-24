@@ -9,7 +9,7 @@
 -- interfaces are supported (with equivalent functionality): one which simply
 -- stores the outcome of the validation process in the request vault and one
 -- which passes the outcome to a callback.
-module Network.Wai.SAML2 ( 
+module Network.Wai.SAML2 (
     -- * Callback-based middleware
     --
     -- $callbackBasedMiddleware
@@ -17,7 +17,7 @@ module Network.Wai.SAML2 (
     saml2Callback,
 
     -- * Vault-based middleware
-    -- 
+    --
     -- $vaultBasedMiddleware
     assertionKey,
     errorKey,
@@ -28,7 +28,7 @@ module Network.Wai.SAML2 (
     module Network.Wai.SAML2.Config,
     module Network.Wai.SAML2.Error,
     module Network.Wai.SAML2.Assertion
-) where 
+) where
 
 --------------------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ import qualified Data.ByteString as BS
 import Data.Maybe (fromMaybe)
 import qualified Data.Vault.Lazy as V
 
-import Network.Wai 
+import Network.Wai
 import Network.Wai.Parse
 import Network.Wai.SAML2.Config
 import Network.Wai.SAML2.Validation
@@ -48,7 +48,7 @@ import System.IO.Unsafe (unsafePerformIO)
 --------------------------------------------------------------------------------
 
 -- | Checks whether the request method of @request@ is @"POST"@.
-isPOST :: Request -> Bool 
+isPOST :: Request -> Bool
 isPOST = (=="POST") . requestMethod
 
 --------------------------------------------------------------------------------
@@ -67,44 +67,44 @@ isPOST = (=="POST") . requestMethod
 -- >            -- a POST request was made to the assertion endpoint, but
 -- >            -- something went wrong, details of which are provided by
 -- >            -- the error: this should probably be logged as it may
--- >            -- indicate that an attack was attempted against the 
+-- >            -- indicate that an attack was attempted against the
 -- >            -- endpoint, but you *must* not show the error
 -- >            -- to the client as it would severely compromise
 -- >            -- system security
--- >            -- 
+-- >            --
 -- >            -- you may also want to return e.g. a HTTP 400 or 401 status
 -- >
--- >        callback (Right result) app req sendResponse = do   
+-- >        callback (Right result) app req sendResponse = do
 -- >            -- a POST request was made to the assertion endpoint and the
--- >            -- SAML2 response was successfully validated:        
--- >            -- you *must* check that you have not encountered the 
+-- >            -- SAML2 response was successfully validated:
+-- >            -- you *must* check that you have not encountered the
 -- >            -- assertion ID before; we assume that there is a
 -- >            -- computation tryRetrieveAssertion which looks up
 -- >            -- assertions by ID in e.g. a database
 -- >            result <- tryRetrieveAssertion (assertionId (assertion result))
--- >            
--- >            case result of 
+-- >
+-- >            case result of
 -- >                Just something -> -- a replay attack has occurred
 -- >                Nothing -> do
 -- >                    -- store the assertion id somewhere
 -- >                    storeAssertion (assertionId (assertion result))
--- >                    
+-- >
 -- >                    -- the assertion is valid and you can now e.g.
 -- >                    -- retrieve user data from your database
 -- >                    -- before proceeding with the request by e.g.
 -- >                    -- redirecting them to the main view
 
 -- | 'saml2Callback' @config callback@ produces SAML2 'Middleware' for
--- the given @config@. If the middleware intercepts a request to the 
+-- the given @config@. If the middleware intercepts a request to the
 -- endpoint given by @config@, the result will be passed to @callback@.
-saml2Callback :: SAML2Config 
+saml2Callback :: SAML2Config
               -> (Either SAML2Error Result -> Middleware)
               -> Middleware
-saml2Callback cfg callback app req sendResponse = do 
-    let path = rawPathInfo req 
+saml2Callback cfg callback app req sendResponse = do
+    let path = rawPathInfo req
 
     -- check if we need to handle this request
-    if | path == saml2AssertionPath cfg && isPOST req -> do 
+    if | path == saml2AssertionPath cfg && isPOST req -> do
             -- default request parse options, but do not allow files;
             -- we are not expecting any
             let bodyOpts = setMaxRequestNumFiles 0
@@ -112,7 +112,7 @@ saml2Callback cfg callback app req sendResponse = do
                          $ defaultParseRequestBodyOptions
 
             -- parse the request
-            (body, _) <- parseRequestBodyEx bodyOpts lbsBackEnd req 
+            (body, _) <- parseRequestBodyEx bodyOpts lbsBackEnd req
 
             case lookup "SAMLResponse" body of
                 Just val -> do
@@ -133,14 +133,14 @@ saml2Callback cfg callback app req sendResponse = do
 --
 -- This is a simpler-to-use 'Middleware' which stores the outcome of a request
 -- made to the assertation endpoint in the request vault. The inner WAI
--- application can then check of the presence of an assertion or an error with 
--- 'V.lookup' and 'assertionKey' or 'errorKey' respectively. At most one of 
+-- application can then check of the presence of an assertion or an error with
+-- 'V.lookup' and 'assertionKey' or 'errorKey' respectively. At most one of
 -- the two locations will be populated for a given request, i.e. it is not
 -- possible for an assertion to be validated and an error to occur.
 --
--- > saml2Vault cfg $ \app req sendResponse -> do 
--- >    case V.lookup errorKey (vault req) of 
--- >        Just err -> 
+-- > saml2Vault cfg $ \app req sendResponse -> do
+-- >    case V.lookup errorKey (vault req) of
+-- >        Just err ->
 -- >            -- log the error, but you *must* not show the error
 -- >            -- to the client as it would severely compromise
 -- >            -- system security
@@ -148,20 +148,20 @@ saml2Callback cfg callback app req sendResponse = do
 -- >
 -- >    case V.lookup assertionKey (vault req) of
 -- >        Nothing -> pure () -- carry on
--- >        Just assertion -> do 
+-- >        Just assertion -> do
 -- >            -- a valid assertion was processed by the middleware,
--- >            -- you *must* check that you have not encountered the 
+-- >            -- you *must* check that you have not encountered the
 -- >            -- assertion ID before; we assume that there is a
 -- >            -- computation tryRetrieveAssertion which looks up
 -- >            -- assertions by ID in e.g. a database
 -- >            result <- tryRetrieveAssertion (assertionId assertion)
--- >            
--- >            case result of 
+-- >
+-- >            case result of
 -- >                Just something -> -- a replay attack has occurred
 -- >                Nothing -> do
 -- >                    -- store the assertion id somewhere
 -- >                    storeAssertion (assertionId assertion)
--- >                    
+-- >
 -- >                    -- the assertion is valid
 
 -- | 'assertionKey' is a vault key for retrieving assertions from
@@ -182,22 +182,22 @@ errorKey = unsafePerformIO V.newKey
 
 -- | 'saml2Vault' @config@ produces SAML2 'Middleware' for the given @config@.
 saml2Vault :: SAML2Config -> Middleware
-saml2Vault cfg = saml2Callback cfg callback 
-    -- if the middleware intercepts a request containing a SAML2 response at 
+saml2Vault cfg = saml2Callback cfg callback
+    -- if the middleware intercepts a request containing a SAML2 response at
     -- the configured endpoint, the outcome of processing response will be
     -- passed to this callback: we store the result in the corresponding
     -- entry in the request vault
     where callback (Left err) app req sendResponse = do
             app req{
                 vault = V.insert errorKey err (vault req)
-            } sendResponse 
+            } sendResponse
           callback (Right result) app req sendResponse = do
-            let mRelayState = relayState result 
+            let mRelayState = relayState result
             let vlt = vault req
 
             app req{
                 vault = V.insert assertionKey (assertion result)
-                      $ fromMaybe vlt $ mRelayState >>= \rs -> 
+                      $ fromMaybe vlt $ mRelayState >>= \rs ->
                             pure $ V.insert relayStateKey rs vlt
             } sendResponse
 

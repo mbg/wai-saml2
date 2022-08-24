@@ -5,11 +5,11 @@
 -- file in the root directory of this source tree.                            --
 --------------------------------------------------------------------------------
 
--- | A high-level interface to XML canonicalisation for the purpose of 
+-- | A high-level interface to XML canonicalisation for the purpose of
 -- SAML2 signature validation.
 module Network.Wai.SAML2.C14N (
     canonicalise
-) where 
+) where
 
 --------------------------------------------------------------------------------
 
@@ -27,8 +27,8 @@ canonicalise xml = c14n c14nOpts c14n_exclusive_1_0 [] False Nothing xml
 
 -- | The options we want to use for canonicalisation of XML documents.
 c14nOpts :: [CInt]
-c14nOpts = 
-    [ xml_opt_noent 
+c14nOpts =
+    [ xml_opt_noent
     , xml_opt_dtdload
     , xml_opt_dtdattr
     -- disable network access

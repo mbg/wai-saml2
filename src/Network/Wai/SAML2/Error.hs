@@ -8,7 +8,7 @@
 -- | SAML2-related errors.
 module Network.Wai.SAML2.Error (
     SAML2Error(..)
-) where 
+) where
 
 --------------------------------------------------------------------------------
 
@@ -24,13 +24,13 @@ import Network.Wai.SAML2.StatusCode
 --------------------------------------------------------------------------------
 
 -- | Enumerates errors that may arise in the SAML2 middleware.
-data SAML2Error 
+data SAML2Error
     -- | The response received from the client is not valid XML.
-    = InvalidResponseXml SomeException 
+    = InvalidResponseXml SomeException
     -- | The assertion is not valid XML.
-    | InvalidAssertionXml SomeException 
+    | InvalidAssertionXml SomeException
     -- | The response is not a valid SAML2 response.
-    | InvalidResponse IOException 
+    | InvalidResponse IOException
     -- | The assertion is not a valid SAML2 assertion.
     | InvalidAssertion IOException
     -- | The issuer is not who we expected.
@@ -44,19 +44,19 @@ data SAML2Error
     -- | Failed to canonicalise some XML.
     | CanonicalisationFailure IOException
     -- | Unable to decrypt the AES key.
-    | DecryptionFailure RSA.Error 
+    | DecryptionFailure RSA.Error
     -- | The initialisation vector for a symmetric cipher is invalid.
-    | InvalidIV 
+    | InvalidIV
     -- | The padding for a blockcipher is invalid.
-    | InvalidPadding 
+    | InvalidPadding
     -- | The signature is incorrect.
-    | InvalidSignature 
+    | InvalidSignature
     -- | The digest is incorrect.
-    | InvalidDigest 
+    | InvalidDigest
     -- | The assertion is not valid.
-    | NotValid 
+    | NotValid
     -- | A general crypto error occurred.
-    | CryptoError CryptoError 
+    | CryptoError CryptoError
     -- | The request made to the configured endpoint is not valid.
     | InvalidRequest
     deriving Show

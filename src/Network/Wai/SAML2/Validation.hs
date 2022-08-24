@@ -9,7 +9,7 @@
 module Network.Wai.SAML2.Validation (
     validateResponse,
     ansiX923
-) where 
+) where
 
 --------------------------------------------------------------------------------
 
@@ -23,9 +23,9 @@ import Crypto.PubKey.RSA.PKCS15 as PKCS15
 import Crypto.Cipher.AES
 import Crypto.Cipher.Types
 
-import qualified Data.ByteString as BS 
+import qualified Data.ByteString as BS
 import qualified Data.ByteString.Base64 as BS
-import qualified Data.ByteString.Lazy as LBS 
+import qualified Data.ByteString.Lazy as LBS
 import Data.Default.Class
 import Data.Time
 
@@ -43,48 +43,48 @@ import qualified Text.XML.Cursor as XML
 --------------------------------------------------------------------------------
 
 -- | 'validateResponse' @cfg responseData@ validates a SAML2 response contained
--- in Base64-encoded @responseData@. 
-validateResponse :: SAML2Config 
-                 -> BS.ByteString 
+-- in Base64-encoded @responseData@.
+validateResponse :: SAML2Config
+                 -> BS.ByteString
                  -> IO (Either SAML2Error Assertion)
-validateResponse cfg responseData = runExceptT $ do 
+validateResponse cfg responseData = runExceptT $ do
     -- get the current time
-    now <- liftIO $ getCurrentTime 
+    now <- liftIO $ getCurrentTime
 
     -- the response data is Base64-encoded; decode it
     let resXmlDocData = BS.decodeLenient responseData
 
-    -- try to parse the XML document; throw an exception if it is not 
+    -- try to parse the XML document; throw an exception if it is not
     -- a valid XML document
-    responseXmlDoc <- case XML.parseLBS def (LBS.fromStrict resXmlDocData) of 
-        Left err -> throwError $ InvalidResponseXml err 
+    responseXmlDoc <- case XML.parseLBS def (LBS.fromStrict resXmlDocData) of
+        Left err -> throwError $ InvalidResponseXml err
         Right responseXmlDoc -> pure responseXmlDoc
 
     -- try to parse the XML document into a structured SAML2 response
-    resParseResult <- liftIO $ try $ 
-        parseXML (XML.fromDocument responseXmlDoc) 
-        
-    samlResponse <- case resParseResult of 
+    resParseResult <- liftIO $ try $
+        parseXML (XML.fromDocument responseXmlDoc)
+
+    samlResponse <- case resParseResult of
         Left err -> throwError $ InvalidResponse err
-        Right samlResponse -> pure samlResponse 
+        Right samlResponse -> pure samlResponse
 
     -- check that the response indicates success
-    case responseStatusCode samlResponse of 
+    case responseStatusCode samlResponse of
         Success -> pure ()
         status -> throwError $ Unsuccessful status
 
     -- check that the destination is as expected, if the configuration
-    -- expects us to validate this 
-    let destination = responseDestination samlResponse 
+    -- expects us to validate this
+    let destination = responseDestination samlResponse
 
-    case saml2ExpectedDestination cfg of 
-        Just expectedDestination 
-            | destination /= expectedDestination -> 
+    case saml2ExpectedDestination cfg of
+        Just expectedDestination
+            | destination /= expectedDestination ->
                 throwError $ UnexpectedDestination destination
         _ -> pure ()
 
     -- check that the issuer is as expected, if the configuration
-    -- expects us to validate this 
+    -- expects us to validate this
     let issuer = responseIssuer samlResponse
 
     case saml2ExpectedIssuer cfg of
@@ -94,10 +94,10 @@ validateResponse cfg responseData = runExceptT $ do
 
     --  ***CORE VALIDATION***
     -- See https://www.w3.org/TR/xmldsig-core1/#sec-CoreValidation
-    -- 
+    --
     --  *REFERENCE VALIDATION*
-    -- 1. We extract the SignedInfo element from the SAML2 response's 
-    -- Signature element. This element contains 
+    -- 1. We extract the SignedInfo element from the SAML2 response's
+    -- Signature element. This element contains
     signedInfo <- extractSignedInfo (XML.fromDocument responseXmlDoc)
 
     -- construct a new XML document from the SignedInfo element and render
@@ -106,17 +106,17 @@ validateResponse cfg responseData = runExceptT $ do
     let signedInfoXml = XML.renderLBS def doc
 
     -- canonicalise the textual representation of the SignedInfo element
-    signedInfoCanonResult <- liftIO $ try $ 
+    signedInfoCanonResult <- liftIO $ try $
         canonicalise (LBS.toStrict signedInfoXml)
 
-    normalisedSignedInfo <- case signedInfoCanonResult of 
+    normalisedSignedInfo <- case signedInfoCanonResult of
         Left err -> throwError $ CanonicalisationFailure err
-        Right result -> pure result 
+        Right result -> pure result
 
     -- 2. At this point we should dereference all elements identified by
     -- Reference elements inside the SignedInfo element. However, we do
     -- not currently do that and instead just assume that there is only
-    -- one Reference element which targets the overall Response. 
+    -- one Reference element which targets the overall Response.
     -- We sanity check this, just in case we are wrong since we do not
     -- want an attacker to be able to exploit this.
     let documentId = responseId samlResponse
@@ -125,13 +125,13 @@ validateResponse cfg responseData = runExceptT $ do
                     $ signatureInfo
                     $ responseSignature samlResponse
 
-    if documentId /= referenceId 
+    if documentId /= referenceId
     then throwError $ UnexpectedReference referenceId
     else pure ()
 
     -- Now that we have sanity checked that we should indeed validate
     -- the entire Response, we need to remove the Signature element
-    -- from it (since the Response cannot possibly have been hashed with 
+    -- from it (since the Response cannot possibly have been hashed with
     -- the Signature element present). First remove the Signature element:
     let docMinusSignature = removeSignature responseXmlDoc
 
@@ -139,9 +139,9 @@ validateResponse cfg responseData = runExceptT $ do
     let renderedXml = XML.renderLBS def docMinusSignature
     refCanonResult <- liftIO $ try $ canonicalise (LBS.toStrict renderedXml)
 
-    normalised <- case refCanonResult of 
+    normalised <- case refCanonResult of
         Left err -> throwError $ CanonicalisationFailure err
-        Right result -> pure result 
+        Right result -> pure result
 
     -- next, compute the hash for the normalised document and extract the
     -- existing hash from the response; both hash values must be the same
@@ -149,19 +149,19 @@ validateResponse cfg responseData = runExceptT $ do
     -- then the response has not been tampered with, assuming that the
     -- Signature has not been tampered with, which we validate next
     let documentHash = hashWith SHA256 normalised
-    let referenceHash = digestFromByteString 
-                      $ BS.decodeLenient 
-                      $ referenceDigestValue 
-                      $ signedInfoReference 
-                      $ signatureInfo 
+    let referenceHash = digestFromByteString
+                      $ BS.decodeLenient
+                      $ referenceDigestValue
+                      $ signedInfoReference
+                      $ signatureInfo
                       $ responseSignature samlResponse
 
-    if Just documentHash /= referenceHash 
+    if Just documentHash /= referenceHash
     then throwError InvalidDigest
     else pure ()
 
     --  *SIGNATURE VALIDATION*
-    -- We need to check that the SignedInfo element has not been tampered 
+    -- We need to check that the SignedInfo element has not been tampered
     -- with, which we do by checking the signature contained in the response;
     -- first: extract the signature data from the response
     let sig = BS.decodeLenient $ signatureValue $ responseSignature samlResponse
@@ -170,9 +170,9 @@ validateResponse cfg responseData = runExceptT $ do
     -- check that the signature is correct
     let pubKey = saml2PublicKey cfg
 
-    if PKCS15.verify (Just SHA256) pubKey normalisedSignedInfo sig 
+    if PKCS15.verify (Just SHA256) pubKey normalisedSignedInfo sig
     then pure ()
-    else throwError InvalidSignature  
+    else throwError InvalidSignature
 
     --  ***ASSERTION DECRYPTION***
     -- the SAML assertion is AES-encrypted and we need to acquire the key
@@ -181,27 +181,27 @@ validateResponse cfg responseData = runExceptT $ do
     -- the key used to decrypt the assertion
     let pk = saml2PrivateKey cfg
     let encryptedAssertion = responseEncryptedAssertion samlResponse
-    
-    oaepResult <- liftIO $ OAEP.decryptSafer (OAEP.defaultOAEPParams SHA1) pk 
-        $ BS.decodeLenient 
-        $ cipherValue 
-        $ encryptedKeyCipher 
-        $ encryptedAssertionKey 
+
+    oaepResult <- liftIO $ OAEP.decryptSafer (OAEP.defaultOAEPParams SHA1) pk
+        $ BS.decodeLenient
+        $ cipherValue
+        $ encryptedKeyCipher
+        $ encryptedAssertionKey
         $ encryptedAssertion
 
-    aesKey <- case oaepResult of 
+    aesKey <- case oaepResult of
         Left err -> throwError $ DecryptionFailure err
         Right cipherData -> pure cipherData
 
-    -- next we can decrypt the assertion; initialise AES128 with 
+    -- next we can decrypt the assertion; initialise AES128 with
     -- the key we have just decrypted
-    xmlData <- case cipherInit aesKey of 
-        CryptoFailed err -> throwError $ CryptoError err 
+    xmlData <- case cipherInit aesKey of
+        CryptoFailed err -> throwError $ CryptoError err
         CryptoPassed aes128 -> do
             -- get the AES ciphertext
-            let cipherText = BS.decodeLenient 
-                           $ cipherValue 
-                           $ encryptedAssertionCipher 
+            let cipherText = BS.decodeLenient
+                           $ cipherValue
+                           $ encryptedAssertionCipher
                            $ encryptedAssertion
 
             -- the IV used for AES is 128bits (16 bytes) prepended
@@ -209,29 +209,29 @@ validateResponse cfg responseData = runExceptT $ do
             let (ivBytes, xmlBytes) = BS.splitAt 16 cipherText
 
             -- convert the bytes into the IV
-            case makeIV ivBytes of 
+            case makeIV ivBytes of
                 Nothing -> throwError InvalidIV
                 Just iv -> do
                     -- run AES to decrypt the assertion
                     let plaintext = cbcDecrypt (aes128 :: AES128) iv xmlBytes
 
                     -- remove padding from the plaintext
-                    case ansiX923 plaintext of 
+                    case ansiX923 plaintext of
                         Nothing -> throwError InvalidPadding
                         Just xmlData -> pure xmlData
 
     -- try to parse the assertion that we decrypted earlier
-    assertion <- case XML.parseLBS def (LBS.fromStrict xmlData) of 
-        Left err -> throwError $ InvalidAssertionXml err 
+    assertion <- case XML.parseLBS def (LBS.fromStrict xmlData) of
+        Left err -> throwError $ InvalidAssertionXml err
         Right assertDoc -> do
             -- try to convert the assertion document into a more
             -- structured representation
-            assertParseResult <- liftIO $ try $ 
+            assertParseResult <- liftIO $ try $
                 parseXML (XML.fromDocument assertDoc)
 
-            case assertParseResult of 
+            case assertParseResult of
                 Left err -> throwError $ InvalidAssertion err
-                Right assertion -> pure assertion 
+                Right assertion -> pure assertion
 
     -- validate that the assertion is valid at this point in time
     let Conditions{..} = assertionConditions assertion
@@ -244,14 +244,14 @@ validateResponse cfg responseData = runExceptT $ do
     -- all checks out, return the assertion
     pure assertion
 
--- | 'ansiX923' @plaintext@ removes ANSI X9.23 padding from @plaintext@. 
+-- | 'ansiX923' @plaintext@ removes ANSI X9.23 padding from @plaintext@.
 -- See https://en.wikipedia.org/wiki/Padding_(cryptography)#ANSI_X9.23
-ansiX923 :: BS.ByteString -> Maybe BS.ByteString 
+ansiX923 :: BS.ByteString -> Maybe BS.ByteString
 ansiX923 d
-    | len == 0 = Nothing 
+    | len == 0 = Nothing
     | padLen < 1 || padLen > len = Nothing
     | otherwise = Just content
-    where len = BS.length d 
+    where len = BS.length d
           padBytes = BS.index d (len-1)
           padLen = fromIntegral padBytes
           (content,_) = BS.splitAt (len - padLen) d

@@ -13,12 +13,12 @@ module Network.Wai.SAML2.Signature (
     SignedInfo(..),
     Reference(..),
     Signature(..)
-) where 
+) where
 
 --------------------------------------------------------------------------------
 
 import qualified Data.ByteString as BS
-import qualified Data.Text as T 
+import qualified Data.Text as T
 import Data.Text.Encoding
 
 import Text.XML.Cursor
@@ -28,28 +28,28 @@ import Network.Wai.SAML2.XML
 --------------------------------------------------------------------------------
 
 -- | Enumerates XML canonicalisation methods.
-data CanonicalisationMethod 
+data CanonicalisationMethod
     -- | Original C14N 1.0 specification.
-    = C14N_1_0 
+    = C14N_1_0
     -- | Exclusive C14N 1.0 specification.
     | C14N_EXC_1_0
     -- | C14N 1.1 specification.
     | C14N_1_1
     deriving (Eq, Show)
 
-instance FromXML CanonicalisationMethod where 
-    parseXML cursor = 
+instance FromXML CanonicalisationMethod where
+    parseXML cursor =
         case T.concat $ attribute "Algorithm" cursor of
             "http://www.w3.org/2001/10/xml-exc-c14n#" -> pure C14N_EXC_1_0
             _ -> fail "Not a valid CanonicalisationMethod"
 
 -- | Enumerates signature methods.
-data SignatureMethod 
+data SignatureMethod
     -- | RSA with SHA256 digest
     = RSA_SHA256
     deriving (Eq, Show)
 
-instance FromXML SignatureMethod where 
+instance FromXML SignatureMethod where
     parseXML cursor = case T.concat $ attribute "Algorithm" cursor of
         "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256" -> pure RSA_SHA256
         _ -> fail "Not a valid SignatureMethod"
@@ -62,7 +62,7 @@ data DigestMethod
     = DigestSHA256
     deriving (Eq, Show)
 
-instance FromXML DigestMethod where 
+instance FromXML DigestMethod where
     parseXML cursor =  case T.concat $ attribute "Algorithm" cursor of
         "http://www.w3.org/2001/04/xmlenc#sha256" -> pure DigestSHA256
         _ -> fail "Not a valid DigestMethod"
@@ -71,7 +71,7 @@ instance FromXML DigestMethod where
 data Reference = Reference {
     -- | The URI of the entity that is referenced.
     referenceURI :: !T.Text,
-    -- | The method that was used to calculate the digest for the 
+    -- | The method that was used to calculate the digest for the
     -- entity that is referenced.
     referenceDigestMethod :: !DigestMethod,
     -- | The digest of the entity that was calculated by the IdP.
@@ -79,12 +79,12 @@ data Reference = Reference {
 } deriving (Eq, Show)
 
 instance FromXML Reference where
-    parseXML cursor = do 
+    parseXML cursor = do
         -- the reference starts with a #, drop it
         let uri = T.drop 1 $ T.concat $ attribute "URI" cursor
 
         digestMethod <- oneOrFail "DigestMethod is required" (
-            cursor $/ element (dsName "DigestMethod") 
+            cursor $/ element (dsName "DigestMethod")
             ) >>= parseXML
 
         let digestValue = encodeUtf8 $ T.concat $
@@ -109,22 +109,22 @@ data SignedInfo = SignedInfo {
     signedInfoReference :: !Reference
 } deriving (Eq, Show)
 
-instance FromXML SignedInfo where 
-    parseXML cursor = do 
-        canonicalisationMethod <- 
+instance FromXML SignedInfo where
+    parseXML cursor = do
+        canonicalisationMethod <-
                 oneOrFail "CanonicalizationMethod is required"
               ( cursor
-             $/ element (dsName "CanonicalizationMethod") 
+             $/ element (dsName "CanonicalizationMethod")
               ) >>= parseXML
 
-        signatureMethod <- 
-                oneOrFail "SignatureMethod is required" 
+        signatureMethod <-
+                oneOrFail "SignatureMethod is required"
               ( cursor
              $/ element (dsName "SignatureMethod")
             ) >>= parseXML
 
-        reference <- 
-                oneOrFail "Reference is required" 
+        reference <-
+                oneOrFail "Reference is required"
               ( cursor
              $/ element (dsName "Reference")
             ) >>= parseXML
@@ -143,8 +143,8 @@ data Signature = Signature {
     signatureValue :: !BS.ByteString
 } deriving (Eq, Show)
 
-instance FromXML Signature where 
-    parseXML cursor = do 
+instance FromXML Signature where
+    parseXML cursor = do
         info <- oneOrFail "SignedInfo is required" (
             cursor $/ element (dsName "SignedInfo") ) >>= parseXML
 

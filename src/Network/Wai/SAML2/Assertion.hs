@@ -39,8 +39,8 @@ data SubjectConfirmationMethod
     | Bearer -- ^ urn:oasis:names:tc:SAML:2.0:cm:bearer
     deriving (Eq, Show)
 
-instance FromXML SubjectConfirmationMethod where 
-    parseXML cursor = case T.concat $ attribute "Method" cursor of 
+instance FromXML SubjectConfirmationMethod where
+    parseXML cursor = case T.concat $ attribute "Method" cursor of
         "urn:oasis:names:tc:SAML:2.0:cm:holder-of-key" -> pure HolderOfKey
         "urn:oasis:names:tc:SAML:2.0:cm:sender-vouches" -> pure SenderVouches
         "urn:oasis:names:tc:SAML:2.0:cm:bearer" -> pure Bearer
@@ -60,12 +60,12 @@ data SubjectConfirmation = SubjectConfirmation {
     subjectConfirmationRecipient :: !T.Text
 } deriving (Eq, Show)
 
-instance FromXML SubjectConfirmation where 
-    parseXML cursor = do 
+instance FromXML SubjectConfirmation where
+    parseXML cursor = do
         method <- parseXML cursor
 
         notOnOrAfter <- parseUTCTime $ T.concat $
-            cursor $/ element (saml2Name "SubjectConfirmationData") 
+            cursor $/ element (saml2Name "SubjectConfirmationData")
                   >=> attribute "NotOnOrAfter"
 
         pure SubjectConfirmation{
@@ -87,8 +87,8 @@ data SubjectNameID = SubjectNameID {
     nameIdValue :: !T.Text
 } deriving (Eq, Show)
 
-instance FromXML SubjectNameID where 
-    parseXML cursor = do 
+instance FromXML SubjectNameID where
+    parseXML cursor = do
         pure SubjectNameID {
             nameIdValue = T.concat $ cursor $/ content
         }
@@ -101,11 +101,11 @@ data Subject = Subject {
     subjectNameId :: !SubjectNameID
 } deriving (Eq, Show)
 
-instance FromXML Subject where 
-    parseXML cursor = do 
-        confirmations <- sequence $ 
+instance FromXML Subject where
+    parseXML cursor = do
+        confirmations <- sequence $
             cursor $/ element (saml2Name "SubjectConfirmation") &| parseXML
-        nameId <- oneOrFail "SubjectNameID is required" $ 
+        nameId <- oneOrFail "SubjectNameID is required" $
             cursor $/ element (saml2Name "NameID") >=> parseXML
 
         pure Subject{
@@ -126,16 +126,16 @@ data Conditions = Conditions {
 } deriving (Eq, Show)
 
 instance FromXML Conditions where
-    parseXML cursor = do 
-        notBefore <- parseUTCTime $ 
+    parseXML cursor = do
+        notBefore <- parseUTCTime $
             T.concat $ attribute "NotBefore" cursor
-        notOnOrAfter <- parseUTCTime $ 
+        notOnOrAfter <- parseUTCTime $
             T.concat $ attribute "NotOnOrAfter" cursor
 
         pure Conditions{
             conditionsNotBefore = notBefore,
             conditionsNotOnOrAfter = notOnOrAfter,
-            conditionsAudience = T.concat $ 
+            conditionsAudience = T.concat $
                 cursor $/ element (saml2Name "AudienceRestriction")
                     &/ element (saml2Name "Audience")
                     &/ content
@@ -154,16 +154,16 @@ data AuthnStatement = AuthnStatement {
 } deriving (Eq, Show)
 
 instance FromXML AuthnStatement where
-    parseXML cursor = do 
-        issueInstant <- parseUTCTime $ 
+    parseXML cursor = do
+        issueInstant <- parseUTCTime $
             T.concat $ attribute "AuthnInstant" cursor
 
         pure AuthnStatement{
             authnStatementInstant = issueInstant,
-            authnStatementSessionIndex = T.concat $ 
-                attribute "SessionIndex" cursor, 
-            authnStatementLocality = T.concat $ 
-                cursor $/ element (saml2Name "SubjectLocality") 
+            authnStatementSessionIndex = T.concat $
+                attribute "SessionIndex" cursor,
+            authnStatementLocality = T.concat $
+                cursor $/ element (saml2Name "SubjectLocality")
                     >=> attribute "Address"
         }
 
@@ -182,13 +182,13 @@ data AssertionAttribute = AssertionAttribute {
 } deriving (Eq, Show)
 
 instance FromXML AssertionAttribute where
-    parseXML cursor = do  
+    parseXML cursor = do
         pure AssertionAttribute{
             attributeName = T.concat $ attribute "Name" cursor,
-            attributeFriendlyName = 
+            attributeFriendlyName =
                 toMaybeText $ attribute "FriendlyName" cursor,
             attributeNameFormat = T.concat $ attribute "NameFormat" cursor,
-            attributeValue = T.concat $ 
+            attributeValue = T.concat $
                 cursor $/ element (saml2Name "AttributeValue") &/ content
         }
 
@@ -197,7 +197,7 @@ type AttributeStatement = [AssertionAttribute]
 
 -- | 'parseAttributeStatement' @cursor@ parses an 'AttributeStatement'.
 parseAttributeStatement :: Cursor -> AttributeStatement
-parseAttributeStatement cursor = 
+parseAttributeStatement cursor =
     cursor $/ element (saml2Name "Attribute") >=> parseXML
 
 --------------------------------------------------------------------------------
@@ -205,7 +205,7 @@ parseAttributeStatement cursor =
 -- | Represents a SAML2 assertion.
 data Assertion = Assertion {
     -- | The unique ID of this assertion. It is important to keep track of
-    -- these in order to avoid replay attacks. 
+    -- these in order to avoid replay attacks.
     assertionId :: !T.Text,
     -- | The date and time when the assertion was issued.
     assertionIssued :: !UTCTime,
@@ -221,9 +221,9 @@ data Assertion = Assertion {
     assertionAttributeStatement :: !AttributeStatement
 } deriving (Eq, Show)
 
-instance FromXML Assertion where 
-    parseXML cursor = do 
-        issueInstant <- parseUTCTime $  
+instance FromXML Assertion where
+    parseXML cursor = do
+        issueInstant <- parseUTCTime $
             T.concat $ attribute "IssueInstant" cursor
 
         subject <- oneOrFail "Subject is required" $
@@ -232,20 +232,20 @@ instance FromXML Assertion where
         conditions <- oneOrFail "Conditions are required" $
             cursor $/ element (saml2Name "Conditions") >=> parseXML
 
-        authnStatement <- oneOrFail "AuthnStatement is required" $ 
+        authnStatement <- oneOrFail "AuthnStatement is required" $
             cursor $/ element (saml2Name "AuthnStatement") >=> parseXML
 
         pure Assertion{
             assertionId = T.concat $ attribute "ID" cursor,
             assertionIssued = issueInstant,
-            assertionIssuer = T.concat $ 
+            assertionIssuer = T.concat $
                 cursor $/ element (saml2Name "Issuer") &/ content,
             assertionSubject = subject,
             assertionConditions = conditions,
             assertionAuthnStatement = authnStatement,
-            assertionAttributeStatement = 
-                cursor $/ element (saml2Name "AttributeStatement") 
-                    >=> parseAttributeStatement 
+            assertionAttributeStatement =
+                cursor $/ element (saml2Name "AttributeStatement")
+                    >=> parseAttributeStatement
         }
 
 --------------------------------------------------------------------------------
