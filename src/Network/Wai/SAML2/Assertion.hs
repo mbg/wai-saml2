@@ -80,8 +80,10 @@ instance FromXML SubjectConfirmation where
         }
 
 
--- | The "NameID" of subject.
+-- | The @<NameID>@ of a subject.
+-- See http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0-cd-02.html#4.4.2.Assertion,%20Subject,%20and%20Statement%20Structure|outline
 data SubjectNameID = SubjectNameID {
+    -- | Some textual identifier for the subject, such as an email address.
     nameIdValue :: !T.Text
 } deriving (Eq, Show)
 
@@ -95,6 +97,7 @@ instance FromXML SubjectNameID where
 data Subject = Subject {
     -- | The list of subject confirmation elements, if any.
     subjectConfirmations :: ![SubjectConfirmation],
+    -- | An identifier for the subject of the assertion.
     subjectNameId :: !SubjectNameID
 } deriving (Eq, Show)
 
