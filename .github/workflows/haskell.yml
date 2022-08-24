@@ -47,10 +47,10 @@ jobs:
             ${{ runner.os }}-${{ matrix.resolver }}-
 
       - name: Install dependencies
-        run: stack --stack-yaml=${{ matrix.resolver }}.yaml --no-terminal build --only-dependencies --fast
+        run: stack --stack-yaml=${{ matrix.resolver }}.yaml --no-terminal build --test --only-dependencies --fast
 
       - name: Build
-        run: stack --stack-yaml=${{ matrix.resolver }}.yaml --no-terminal build --fast
+        run: stack --stack-yaml=${{ matrix.resolver }}.yaml --no-terminal build --test --no-run-tests --fast
 
       - name: Test
         run: stack --stack-yaml=${{ matrix.resolver }}.yaml --no-terminal test --fast
