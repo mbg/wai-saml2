@@ -43,3 +43,17 @@ library:
     ghc-options:
     - -W
 
+tests:
+  parser:
+    main: Parser.hs
+    source-dirs: tests
+    ghc-options: -Wall -Wcompat
+    dependencies:
+    - base
+    - bytestring
+    - filepath
+    - pretty-show
+    - tasty
+    - tasty-golden
+    - wai-saml2
+    - xml-conduit

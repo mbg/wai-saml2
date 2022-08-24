@@ -113,19 +113,27 @@ data EncryptedAssertion = EncryptedAssertion {
 
 instance FromXML EncryptedAssertion where
     parseXML cursor = do
-        algorithm <- oneOrFail "Algorithm is required"
-                 (   cursor
-                 $/  element (xencName "EncryptionMethod")
-                 ) >>= parseXML
+        encryptedData <- oneOrFail "EncryptedData is required"
+            $   cursor
+            $/  element (xencName "EncryptedData")
 
-        keyInfo <- oneOrFail "KeyInfo is required"
-               (   cursor
-               $/  element (dsName "KeyInfo")
-               &/  element (xencName "EncryptedKey")
-               ) >>= parseXML
+        algorithm <- oneOrFail "Algorithm is required"
+            $   encryptedData
+            $/  element (xencName "EncryptionMethod")
+            >=> parseXML
+
+        keyInfo <- oneOrFail "EncryptedKey is required" $ mconcat
+            [ cursor $/ element (xencName "EncryptedKey")
+            >=> parseXML
+            , cursor
+                $/ element (xencName "EncryptedData")
+                &/ element (dsName "KeyInfo")
+                &/ element (xencName "EncryptedKey")
+            >=> parseXML
+            ]
 
         cipher <- oneOrFail "CipherData is required"
-               (  cursor
+               (  encryptedData
               $/  element (xencName "CipherData")
               ) >>= parseXML
 
