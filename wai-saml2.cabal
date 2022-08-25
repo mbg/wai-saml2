@@ -20,6 +20,10 @@ build-type:     Simple
 extra-source-files:
     README.md
     CHANGELOG.md
+    tests/data/keycloak.xml
+    tests/data/keycloak.xml.expected
+    tests/data/okta.xml
+    tests/data/okta.xml.expected
 
 source-repository head
   type: git
