@@ -1,6 +1,6 @@
 # Changelog for `wai-saml2`
 
-## Unreleased
+## 0.3
 
 * Improve parse error handling and make `encryptedKeyData` optional ([#11](https://github.com/mbg/wai-saml2/pull/11) by [@Philonous](https://github.com/Philonous))
 * Add `subjectNameId` to `Subject` type ([#13](https://github.com/mbg/wai-saml2/pull/13) by [@kdxu](https://github.com/kdxu))
