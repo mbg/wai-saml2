@@ -10,6 +10,7 @@ module Network.Wai.SAML2.Assertion (
     SubjectConfirmationMethod(..),
     SubjectConfirmation(..),
     Subject(..),
+    NameId(..),
     Conditions(..),
     AuthnStatement(..),
     AssertionAttribute(..),
@@ -82,14 +83,14 @@ instance FromXML SubjectConfirmation where
 
 -- | The @<NameID>@ of a subject.
 -- See http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0-cd-02.html#4.4.2.Assertion,%20Subject,%20and%20Statement%20Structure|outline
-data SubjectNameID = SubjectNameID {
+data NameId = NameId {
     -- | Some textual identifier for the subject, such as an email address.
     nameIdValue :: !T.Text
 } deriving (Eq, Show)
 
-instance FromXML SubjectNameID where
+instance FromXML NameId where
     parseXML cursor = do
-        pure SubjectNameID {
+        pure NameId {
             nameIdValue = T.concat $ cursor $/ content
         }
 
@@ -98,7 +99,7 @@ data Subject = Subject {
     -- | The list of subject confirmation elements, if any.
     subjectConfirmations :: ![SubjectConfirmation],
     -- | An identifier for the subject of the assertion.
-    subjectNameId :: !SubjectNameID
+    subjectNameId :: !NameId
 } deriving (Eq, Show)
 
 instance FromXML Subject where
