@@ -23,6 +23,7 @@ module Network.Wai.SAML2.Assertion (
 
 import Control.Monad
 
+import Data.Maybe (listToMaybe)
 import qualified Data.Text as T
 import Data.Time
 
@@ -83,7 +84,18 @@ instance FromXML SubjectConfirmation where
 
 -- | The @<NameID>@ of a subject.
 -- See http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0-cd-02.html#4.4.2.Assertion,%20Subject,%20and%20Statement%20Structure|outline
+-- and https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf#page=13
 data NameId = NameId {
+    -- | The domain that qualifies the name. Allows names from different sources
+    -- to used together without colliding
+    nameIdQualifier :: !(Maybe T.Text),
+    -- | Additionally qualifies the name with the name of the service provider
+    nameIdSPNameQualifier :: !(Maybe T.Text),
+    -- | Name provided by a service provider
+    nameIdSPProvidedID :: !(Maybe T.Text),
+    -- | A URI reference describing the format of the value. If not specified it
+    -- defaults to @urn:oasis:names:tc:SAML:1.0:nameid-format:unspecified@
+    nameIdFormat :: !(Maybe T.Text),
     -- | Some textual identifier for the subject, such as an email address.
     nameIdValue :: !T.Text
 } deriving (Eq, Show)
@@ -91,6 +103,11 @@ data NameId = NameId {
 instance FromXML NameId where
     parseXML cursor = do
         pure NameId {
+            nameIdQualifier = listToMaybe $ attribute "NameQualifier" cursor,
+            nameIdSPNameQualifier =
+                listToMaybe $ attribute "SPNameQualifier" cursor,
+            nameIdSPProvidedID = listToMaybe $ attribute "SPProvidedID" cursor,
+            nameIdFormat = listToMaybe $ attribute "Format" cursor,
             nameIdValue = T.concat $ cursor $/ content
         }
 
