@@ -38,7 +38,9 @@ data SAML2Config = SAML2Config {
     -- | A value indicating whether to disable time validity checks. This
     -- should not be set to 'True' in a production environment, but may
     -- be useful for testing purposes.
-    saml2DisableTimeValidation :: !Bool
+    saml2DisableTimeValidation :: !Bool,
+    -- | Always decrypt assertions using 'saml2PrivateKey' and reject plaintext assertions.
+    saml2RequireEncryptedAssertion :: !Bool
 }
 
 -- | 'saml2Config' @privateKey publicKey@ constructs a 'SAML2Config' value
@@ -52,7 +54,8 @@ saml2Config privKey pubKey = SAML2Config{
     saml2PublicKey = pubKey,
     saml2ExpectedIssuer = Nothing,
     saml2ExpectedDestination = Nothing,
-    saml2DisableTimeValidation = False
+    saml2DisableTimeValidation = False,
+    saml2RequireEncryptedAssertion = True
 }
 
 --------------------------------------------------------------------------------

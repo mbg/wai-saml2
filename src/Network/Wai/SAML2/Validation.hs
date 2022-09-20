@@ -174,13 +174,33 @@ validateResponse cfg responseData = runExceptT $ do
     then pure ()
     else throwError InvalidSignature
 
+    assertion <- case responseEncryptedAssertion samlResponse of
+        Just encrypted -> decryptAssertion cfg encrypted
+        Nothing
+            | saml2RequireEncryptedAssertion cfg -> throwError EncryptedAssertionRequired
+            | otherwise -> case responseAssertion samlResponse of
+                Just plain -> pure plain
+                Nothing -> throwError $ InvalidResponse $ userError "Assertion or EncryptedAssertion is required"
+
+    -- validate that the assertion is valid at this point in time
+    let Conditions{..} = assertionConditions assertion
+
+    if (now < conditionsNotBefore || now >= conditionsNotOnOrAfter) &&
+        not (saml2DisableTimeValidation cfg)
+    then throwError NotValid
+    else pure ()
+
+    -- all checks out, return the assertion
+    pure assertion
+
+decryptAssertion :: SAML2Config -> EncryptedAssertion -> ExceptT SAML2Error IO Assertion
+decryptAssertion cfg encryptedAssertion = do
     --  ***ASSERTION DECRYPTION***
     -- the SAML assertion is AES-encrypted and we need to acquire the key
     -- to decrypt it; the key itself is RSA-encrypted:
     -- get the private key from the configuration and use it to decrypt
     -- the key used to decrypt the assertion
     let pk = saml2PrivateKey cfg
-    let encryptedAssertion = responseEncryptedAssertion samlResponse
 
     oaepResult <- liftIO $ OAEP.decryptSafer (OAEP.defaultOAEPParams SHA1) pk
         $ BS.decodeLenient
@@ -221,7 +241,7 @@ validateResponse cfg responseData = runExceptT $ do
                         Just xmlData -> pure xmlData
 
     -- try to parse the assertion that we decrypted earlier
-    assertion <- case XML.parseLBS def (LBS.fromStrict xmlData) of
+    case XML.parseLBS def (LBS.fromStrict xmlData) of
         Left err -> throwError $ InvalidAssertionXml err
         Right assertDoc -> do
             -- try to convert the assertion document into a more
@@ -232,17 +252,6 @@ validateResponse cfg responseData = runExceptT $ do
             case assertParseResult of
                 Left err -> throwError $ InvalidAssertion err
                 Right assertion -> pure assertion
-
-    -- validate that the assertion is valid at this point in time
-    let Conditions{..} = assertionConditions assertion
-
-    if (now < conditionsNotBefore || now >= conditionsNotOnOrAfter) &&
-        not (saml2DisableTimeValidation cfg)
-    then throwError NotValid
-    else pure ()
-
-    -- all checks out, return the assertion
-    pure assertion
 
 -- | 'ansiX923' @plaintext@ removes ANSI X9.23 padding from @plaintext@.
 -- See https://en.wikipedia.org/wiki/Padding_(cryptography)#ANSI_X9.23

@@ -18,6 +18,7 @@ main :: IO ()
 main = defaultMain $ testGroup "Parse SAML2 response"
     [ mkGolden $ prefix </> "keycloak.xml"
     , mkGolden $ prefix </> "okta.xml"
+    , mkGolden $ prefix </> "google.xml"
     ]
     where
         prefix = "tests/data"
