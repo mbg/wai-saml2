@@ -26,6 +26,7 @@ dependencies:
 - text < 2
 - bytestring >= 0.9 && < 0.12
 - base64-bytestring >= 0.1 && < 2
+- containers >= 0.6 && <0.7
 - data-default-class < 1
 - http-types < 1
 - wai >= 3.0 && < 4
