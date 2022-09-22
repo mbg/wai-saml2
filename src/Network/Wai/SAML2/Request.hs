@@ -1,14 +1,27 @@
-module Network.Wai.SAML2.Request
-    ( AuthnRequest(..)
-    , issueAuthnRequest
-    , renderAuthnRequest
-    ) where
+-------------------------------------------------------------------------------
+-- SAML2 Middleware for WAI                                                  --
+-------------------------------------------------------------------------------
+-- This source code is licensed under the MIT license found in the LICENSE   --
+-- file in the root directory of this source tree.                           --
+-------------------------------------------------------------------------------
+
+module Network.Wai.SAML2.Request (
+    AuthnRequest(..),
+    issueAuthnRequest,
+    renderAuthnRequest
+) where
+
+-------------------------------------------------------------------------------
 
 import Crypto.Random
+
 import Data.Time.Clock
 import Data.Time.Format
+
 import Network.Wai.SAML2.XML
+
 import Text.XML
+
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Base64 as Base64
 import qualified Data.ByteString.Lazy as BL
@@ -16,47 +29,55 @@ import qualified Data.Map.Strict as Map
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 
+-------------------------------------------------------------------------------
+
 -- | Parameters for SP-initiated SSO
-data AuthnRequest = AuthnRequest
-    { authnRequestTimestamp :: UTCTime
-    -- ^ the time at which 'AuthnRequest' is created
-    , authnRequestID :: T.Text
-    -- ^ Unique identifier for 'AuthnRequest' which should be preserved in the response
-    , authnRequestIssuer :: T.Text
-    -- ^ SP Entity ID
-    , authnRequestAllowCreate :: Bool
-    -- ^ Allow IdP to generate a new identifier
-    , authnRequestNameIDFormat :: T.Text
+data AuthnRequest
+    = AuthnRequest {
+        -- | The time at which 'AuthnRequest' was created.
+        authnRequestTimestamp :: !UTCTime
+        -- | Unique identifier for 'AuthnRequest' which should be preserved
+        -- by the IdP in its response.
+    ,   authnRequestID :: !T.Text
+        -- | SP Entity ID
+    ,   authnRequestIssuer :: !T.Text
+        -- | Allow IdP to generate a new identifier
+    ,   authnRequestAllowCreate :: !Bool
+        -- | The URI reference corresponding to a name identifier format
+    ,   authnRequestNameIDFormat :: !T.Text
     }
 
--- | Create a default 'AuthnRequest' with the current timestamp and randomly-generated ID.
+-- | Creates a default 'AuthnRequest' with the current timestamp and a
+-- randomly-generated ID.
 issueAuthnRequest
     :: T.Text -- ^ SP Entity ID
     -> IO AuthnRequest
 issueAuthnRequest authnRequestIssuer = do
     authnRequestTimestamp <- getCurrentTime
-    authnRequestID <- T.decodeUtf8 . Base64.encode <$> getRandomBytes 16
-    pure AuthnRequest
-        { authnRequestAllowCreate = True
-        , authnRequestNameIDFormat
-            = "urn:oasis:names:tc:SAML:2.0:nameid-format:transient"
-        , ..
-        }
+    authnRequestID <- T.decodeUtf8 . Base64.encode <$> getRandomBytes 64
+    pure AuthnRequest{
+        authnRequestAllowCreate = True
+    ,   authnRequestNameIDFormat =
+            "urn:oasis:names:tc:SAML:2.0:nameid-format:transient"
+    ,   ..
+    }
 
--- | Generate a base64-encoded AuthnRequest for SP initiated SSO, which should be used as a SAMLRequest parameter.
+-- | Generates a base64-encoded AuthnRequest for SP initiated SSO, which
+-- should be used as a SAMLRequest parameter.
 -- See also: http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0-cd-02.html#5.1.2.SP-Initiated%20SSO:%20%20Redirect/POST%20Bindings|outline
 renderAuthnRequest :: AuthnRequest -> B.ByteString
-renderAuthnRequest AuthnRequest{..} = Base64.encode
-    $ BL.toStrict
-    $ renderLBS def
-    $ Document
-        { documentPrologue = Prologue [] Nothing []
-        , documentRoot = root
-        , documentEpilogue = []
-        }
+renderAuthnRequest AuthnRequest{..} =
+    Base64.encode $
+    BL.toStrict $
+    renderLBS def $
+    Document{
+        documentPrologue = Prologue [] Nothing []
+    ,   documentRoot = root
+    ,   documentEpilogue = []
+    }
     where
-        timestamp = T.pack
-            $ formatTime defaultTimeLocale timeFormat authnRequestTimestamp
+        timestamp = T.pack $
+            formatTime defaultTimeLocale timeFormat authnRequestTimestamp
         root = Element
             (saml2pName "AuthnRequest")
             (Map.fromList
@@ -80,3 +101,5 @@ renderAuthnRequest AuthnRequest{..} = Base64.encode
                 , ("Format", authnRequestNameIDFormat)
                 ])
             []
+
+-------------------------------------------------------------------------------
