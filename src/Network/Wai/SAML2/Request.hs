@@ -46,6 +46,7 @@ data AuthnRequest
         -- | The URI reference corresponding to a name identifier format
     ,   authnRequestNameIDFormat :: !T.Text
     }
+    deriving (Eq, Show)
 
 -- | Creates a default 'AuthnRequest' with the current timestamp and a
 -- randomly-generated ID.
