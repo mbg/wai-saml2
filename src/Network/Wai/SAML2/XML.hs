@@ -16,6 +16,7 @@ module Network.Wai.SAML2.XML (
     -- * Utility functions
     toMaybeText,
     parseUTCTime,
+    timeFormat,
 
     -- * XML parsing
     FromXML(..),
