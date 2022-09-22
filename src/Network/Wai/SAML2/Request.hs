@@ -5,6 +5,15 @@
 -- file in the root directory of this source tree.                           --
 -------------------------------------------------------------------------------
 
+-- | Defines types and functions for SP-initiated SSO. Use `issueAuthnRequest`
+-- to initialise an `AuthnRequest` value which stores the parameters for the
+-- authentication request you wish to issue to the IdP. You can update this
+-- value as required. Then use `renderAuthnRequest` to format the
+-- `AuthnRequest` as XML and render it to a `B.ByteString` containing a
+-- base64-encoded representation of it. You should then perform a HTTP redirect
+-- to send the client to the IdP, appending the base64-encoded `AuthnRequest`
+-- as a query parameter named @SAMLRequest@. You may wish to read the
+-- [SAML2 specification for this process](http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0-cd-02.html#5.1.2.SP-Initiated%20SSO:%20%20Redirect/POST%20Bindings|outline).
 module Network.Wai.SAML2.Request (
     AuthnRequest(..),
     issueAuthnRequest,
@@ -63,9 +72,8 @@ issueAuthnRequest authnRequestIssuer = do
     ,   ..
     }
 
--- | Generates a base64-encoded AuthnRequest for SP initiated SSO, which
--- should be used as a SAMLRequest parameter.
--- See also: http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0-cd-02.html#5.1.2.SP-Initiated%20SSO:%20%20Redirect/POST%20Bindings|outline
+-- | Generates a base64-encoded `AuthnRequest` for SP initiated SSO, which
+-- should be used as a query parameter named @SAMLRequest@.
 renderAuthnRequest :: AuthnRequest -> B.ByteString
 renderAuthnRequest AuthnRequest{..} =
     Base64.encode $
