@@ -19,12 +19,14 @@ module Network.Wai.SAML2.Response (
 
 --------------------------------------------------------------------------------
 
+import Data.Maybe (listToMaybe)
 import qualified Data.Text as T
 import Data.Time
 
 import Text.XML
 import Text.XML.Cursor
 
+import Network.Wai.SAML2.Assertion
 import Network.Wai.SAML2.XML
 import Network.Wai.SAML2.XML.Encrypted
 import Network.Wai.SAML2.StatusCode
@@ -48,8 +50,10 @@ data Response = Response {
     responseStatusCode :: !StatusCode,
     -- | The response signature.
     responseSignature :: !Signature,
-    -- | The (encrypted) assertion.
-    responseEncryptedAssertion :: !EncryptedAssertion
+    -- | The unencrypted assertion.
+    responseAssertion :: !(Maybe Assertion),
+    -- | The encrypted assertion.
+    responseEncryptedAssertion :: !(Maybe EncryptedAssertion)
 } deriving (Eq, Show)
 
 instance FromXML Response where
@@ -62,8 +66,13 @@ instance FromXML Response where
             Nothing -> fail "Invalid status code"
             Just sc -> pure sc
 
-        encAssertion <- oneOrFail "EncryptedAssertion is required"
-                    (   cursor
+        let assertion = listToMaybe
+                    $ ( cursor
+                    $/  element (saml2Name "Assertion")
+                    ) >>= parseXML
+
+        let encAssertion = listToMaybe
+                    $ ( cursor
                     $/  element (saml2Name "EncryptedAssertion")
                     ) >>= parseXML
 
@@ -79,6 +88,7 @@ instance FromXML Response where
                 cursor $/ element (saml2Name "Issuer") &/ content,
             responseStatusCode = statusCode,
             responseSignature = signature,
+            responseAssertion = assertion,
             responseEncryptedAssertion = encAssertion
         }
 

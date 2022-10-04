@@ -59,6 +59,8 @@ data SAML2Error
     | CryptoError CryptoError
     -- | The request made to the configured endpoint is not valid.
     | InvalidRequest
+    -- | The configuration requires an encrypted assertion, but got a plaintext assertion.
+    | EncryptedAssertionRequired
     deriving Show
 
 --------------------------------------------------------------------------------
