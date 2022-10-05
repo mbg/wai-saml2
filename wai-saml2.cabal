@@ -20,6 +20,8 @@ build-type:     Simple
 extra-source-files:
     README.md
     CHANGELOG.md
+    tests/data/google.xml
+    tests/data/google.xml.expected
     tests/data/keycloak.xml
     tests/data/keycloak.xml.expected
     tests/data/okta.xml
@@ -35,6 +37,7 @@ library
       Network.Wai.SAML2.Assertion
       Network.Wai.SAML2.C14N
       Network.Wai.SAML2.Config
+      Network.Wai.SAML2.EntityDescriptor
       Network.Wai.SAML2.Error
       Network.Wai.SAML2.KeyInfo
       Network.Wai.SAML2.Request
