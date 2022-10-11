@@ -2,5 +2,6 @@ resolver: lts-16.1
 packages:
 - .
 
-extra-deps: 
+extra-deps:
 - c14n-0.1.0.1@sha256:c56a513c1363d126ee704656b59d2e2af1cfe878587a97cb69ab0122b82e2d4d,1371
+- cryptostore-0.2.2.0@sha256:036c6ae7d73b7b925c0151ec361c36b28b01fe54092b534cb22d6250e58dcaa3,3881

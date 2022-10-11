@@ -1,1 +1,4 @@
 resolver: lts-18.28
+
+extra-deps:
+- cryptostore-0.2.2.0@sha256:036c6ae7d73b7b925c0151ec361c36b28b01fe54092b534cb22d6250e58dcaa3,3881
