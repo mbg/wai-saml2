@@ -47,8 +47,7 @@ Response
                       { nameIdQualifier = Nothing
                       , nameIdSPNameQualifier = Nothing
                       , nameIdSPProvidedID = Nothing
-                      , nameIdFormat =
-                          Just "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+                      , nameIdFormat = Just EmailAddress
                       , nameIdValue = "sdlc-standard@herp.chat"
                       }
                 }

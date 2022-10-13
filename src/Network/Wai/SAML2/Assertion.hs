@@ -29,6 +29,7 @@ import Data.Time
 
 import Text.XML.Cursor
 
+import Network.Wai.SAML2.NameIDFormat
 import Network.Wai.SAML2.XML
 
 --------------------------------------------------------------------------------
@@ -95,19 +96,21 @@ data NameId = NameId {
     nameIdSPProvidedID :: !(Maybe T.Text),
     -- | A URI reference describing the format of the value. If not specified it
     -- defaults to @urn:oasis:names:tc:SAML:1.0:nameid-format:unspecified@
-    nameIdFormat :: !(Maybe T.Text),
+    nameIdFormat :: !(Maybe NameIDFormat),
     -- | Some textual identifier for the subject, such as an email address.
     nameIdValue :: !T.Text
 } deriving (Eq, Show)
 
 instance FromXML NameId where
     parseXML cursor = do
+        nameIdFormat <- traverse parseNameIDFormat
+            $ listToMaybe (attribute "Format" cursor)
         pure NameId {
             nameIdQualifier = listToMaybe $ attribute "NameQualifier" cursor,
             nameIdSPNameQualifier =
                 listToMaybe $ attribute "SPNameQualifier" cursor,
             nameIdSPProvidedID = listToMaybe $ attribute "SPProvidedID" cursor,
-            nameIdFormat = listToMaybe $ attribute "Format" cursor,
+            nameIdFormat = nameIdFormat,
             nameIdValue = T.concat $ cursor $/ content
         }
 

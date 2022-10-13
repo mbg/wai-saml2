@@ -39,6 +39,7 @@ library
       Network.Wai.SAML2.Config
       Network.Wai.SAML2.Error
       Network.Wai.SAML2.KeyInfo
+      Network.Wai.SAML2.NameIDFormat
       Network.Wai.SAML2.Request
       Network.Wai.SAML2.Response
       Network.Wai.SAML2.Signature
