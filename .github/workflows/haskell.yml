@@ -47,10 +47,19 @@ jobs:
             ${{ runner.os }}-${{ matrix.resolver }}-
 
       - name: Install dependencies
-        run: stack --stack-yaml=${{ matrix.resolver }}.yaml --no-terminal build --test --only-dependencies --fast
+        run: stack --stack-yaml=${{ matrix.resolver }}.yaml --no-terminal build --test --haddock --only-dependencies --fast
 
       - name: Build
-        run: stack --stack-yaml=${{ matrix.resolver }}.yaml --no-terminal build --test --no-run-tests --fast
+        run: |
+          stack --stack-yaml=${{ matrix.resolver }}.yaml --no-terminal build --fast \
+            --test --no-run-tests \
+            --haddock --haddock-arguments='-odocs'
+
+      - name: Upload documentation
+        uses: actions/upload-artifact@v3
+        with:
+          name: docs-${{ matrix.resolver }}
+          path: docs/
 
       - name: Test
         run: stack --stack-yaml=${{ matrix.resolver }}.yaml --no-terminal test --fast
