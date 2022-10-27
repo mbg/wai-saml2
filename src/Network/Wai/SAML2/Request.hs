@@ -32,6 +32,7 @@ import Network.Wai.SAML2.XML
 import Text.XML
 
 import qualified Data.ByteString as B
+import qualified Data.ByteString.Base16 as Base16
 import qualified Data.ByteString.Base64 as Base64
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.Map.Strict as Map
@@ -64,7 +65,9 @@ issueAuthnRequest
     -> IO AuthnRequest
 issueAuthnRequest authnRequestIssuer = do
     authnRequestTimestamp <- getCurrentTime
-    authnRequestID <- T.decodeUtf8 . Base64.encode <$> getRandomBytes 64
+    -- Azure AD does not accept an id starting with a number
+    -- https://learn.microsoft.com/en-us/azure/active-directory/develop/single-sign-on-saml-protocol
+    authnRequestID <- ("id" <>) . T.decodeUtf8 . Base16.encode <$> getRandomBytes 16
     pure AuthnRequest{
         authnRequestAllowCreate = True
     ,   authnRequestNameIDFormat =
