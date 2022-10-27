@@ -20,6 +20,8 @@ build-type:     Simple
 extra-source-files:
     README.md
     CHANGELOG.md
+    tests/data/google.xml
+    tests/data/google.xml.expected
     tests/data/keycloak.xml
     tests/data/keycloak.xml.expected
     tests/data/okta.xml
