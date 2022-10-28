@@ -42,13 +42,13 @@ Response
                             "https://herp.loopback.ja-sore.de/auth/page/saml2/login"
                         }
                     ]
-                , subjectNameId =
-                    NameId
-                      { nameIdQualifier = Nothing
-                      , nameIdSPNameQualifier = Nothing
-                      , nameIdSPProvidedID = Nothing
-                      , nameIdFormat = Just EmailAddress
-                      , nameIdValue = "sdlc-standard@herp.chat"
+                , subjectNameID =
+                    NameID
+                      { nameIDQualifier = Nothing
+                      , nameIDSPNameQualifier = Nothing
+                      , nameIDSPProvidedID = Nothing
+                      , nameIDFormat = Just EmailAddress
+                      , nameIDValue = "sdlc-standard@herp.chat"
                       }
                 }
           , assertionConditions =

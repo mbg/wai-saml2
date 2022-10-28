@@ -1,5 +1,9 @@
 # Changelog for `wai-saml2`
 
+## Unreleased
+
+* Exported `NameID` (formerly `NameId`), and renamed `subjectNameId` to `subjectNameID`
+
 ## 0.3
 
 * Improve parse error handling and make `encryptedKeyData` optional ([#11](https://github.com/mbg/wai-saml2/pull/11) by [@Philonous](https://github.com/Philonous))

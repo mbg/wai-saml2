@@ -10,7 +10,7 @@ module Network.Wai.SAML2.Assertion (
     SubjectConfirmationMethod(..),
     SubjectConfirmation(..),
     Subject(..),
-    NameId(..),
+    NameID(..),
     Conditions(..),
     AuthnStatement(..),
     AssertionAttribute(..),
@@ -86,32 +86,32 @@ instance FromXML SubjectConfirmation where
 -- | The @<NameID>@ of a subject.
 -- See http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0-cd-02.html#4.4.2.Assertion,%20Subject,%20and%20Statement%20Structure|outline
 -- and https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf#page=13
-data NameId = NameId {
+data NameID = NameID {
     -- | The domain that qualifies the name. Allows names from different sources
     -- to used together without colliding
-    nameIdQualifier :: !(Maybe T.Text),
+    nameIDQualifier :: !(Maybe T.Text),
     -- | Additionally qualifies the name with the name of the service provider
-    nameIdSPNameQualifier :: !(Maybe T.Text),
+    nameIDSPNameQualifier :: !(Maybe T.Text),
     -- | Name provided by a service provider
-    nameIdSPProvidedID :: !(Maybe T.Text),
+    nameIDSPProvidedID :: !(Maybe T.Text),
     -- | A URI reference describing the format of the value. If not specified it
     -- defaults to @urn:oasis:names:tc:SAML:1.0:nameid-format:unspecified@
-    nameIdFormat :: !(Maybe NameIDFormat),
+    nameIDFormat :: !(Maybe NameIDFormat),
     -- | Some textual identifier for the subject, such as an email address.
-    nameIdValue :: !T.Text
+    nameIDValue :: !T.Text
 } deriving (Eq, Show)
 
-instance FromXML NameId where
+instance FromXML NameID where
     parseXML cursor = do
-        nameIdFormat <- traverse parseNameIDFormat
+        nameIDFormat <- traverse parseNameIDFormat
             $ listToMaybe (attribute "Format" cursor)
-        pure NameId {
-            nameIdQualifier = listToMaybe $ attribute "NameQualifier" cursor,
-            nameIdSPNameQualifier =
+        pure NameID {
+            nameIDQualifier = listToMaybe $ attribute "NameQualifier" cursor,
+            nameIDSPNameQualifier =
                 listToMaybe $ attribute "SPNameQualifier" cursor,
-            nameIdSPProvidedID = listToMaybe $ attribute "SPProvidedID" cursor,
-            nameIdFormat = nameIdFormat,
-            nameIdValue = T.concat $ cursor $/ content
+            nameIDSPProvidedID = listToMaybe $ attribute "SPProvidedID" cursor,
+            nameIDFormat = nameIDFormat,
+            nameIDValue = T.concat $ cursor $/ content
         }
 
 -- | The subject of the assertion.
@@ -119,19 +119,19 @@ data Subject = Subject {
     -- | The list of subject confirmation elements, if any.
     subjectConfirmations :: ![SubjectConfirmation],
     -- | An identifier for the subject of the assertion.
-    subjectNameId :: !NameId
+    subjectNameID :: !NameID
 } deriving (Eq, Show)
 
 instance FromXML Subject where
     parseXML cursor = do
         confirmations <- sequence $
             cursor $/ element (saml2Name "SubjectConfirmation") &| parseXML
-        nameId <- oneOrFail "SubjectNameID is required" $
+        nameID <- oneOrFail "SubjectNameID is required" $
             cursor $/ element (saml2Name "NameID") >=> parseXML
 
         pure Subject{
             subjectConfirmations = confirmations,
-            subjectNameId        = nameId
+            subjectNameID        = nameID
         }
 
 --------------------------------------------------------------------------------
