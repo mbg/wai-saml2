@@ -8,16 +8,23 @@
 -- | Defines types and functions for SP-initiated SSO. Use `issueAuthnRequest`
 -- to initialise an `AuthnRequest` value which stores the parameters for the
 -- authentication request you wish to issue to the IdP. You can update this
--- value as required. Then use `renderAuthnRequest` to format the
--- `AuthnRequest` as XML and render it to a `B.ByteString` containing a
--- base64-encoded representation of it. You should then perform a HTTP redirect
--- to send the client to the IdP, appending the base64-encoded `AuthnRequest`
--- as a query parameter named @SAMLRequest@. You may wish to read the
--- [SAML2 specification for this process](http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0-cd-02.html#5.1.2.SP-Initiated%20SSO:%20%20Redirect/POST%20Bindings|outline).
+-- value as required.
+--
+-- Use `renderBase64` to render the request for use with a HTTP POST binding [1], or
+-- `renderUrlEncodingDeflate` for HTTP redirect binding[2] respectively.
+-- You may wish to read
+-- the [SAML2 overview for this process](http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0-cd-02.html#5.1.2.SP-Initiated%20SSO:%20%20Redirect/POST%20Bindings|outline).
+--
+-- * [1] https://docs.oasis-open.org/security/saml/v2.0/saml-bindings-2.0-os.pdf#page=21
+--   Section 3.5 HTTP POST Binding
+-- * [2] https://docs.oasis-open.org/security/saml/v2.0/saml-bindings-2.0-os.pdf#page=15
+--   Section 3.4 HTTP Redirect Binding
 module Network.Wai.SAML2.Request (
     AuthnRequest(..),
     issueAuthnRequest,
-    renderAuthnRequest
+    renderBase64,
+    renderUrlEncodingDeflate,
+    renderXML,
 ) where
 
 -------------------------------------------------------------------------------
@@ -31,6 +38,7 @@ import Network.Wai.SAML2.XML
 
 import Text.XML
 
+import qualified Codec.Compression.Zlib.Raw as Deflate
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Base16 as Base16
 import qualified Data.ByteString.Base64 as Base64
@@ -38,6 +46,7 @@ import qualified Data.ByteString.Lazy as BL
 import qualified Data.Map.Strict as Map
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
+import Network.HTTP.Types (urlEncode)
 
 -------------------------------------------------------------------------------
 
@@ -75,12 +84,26 @@ issueAuthnRequest authnRequestIssuer = do
     ,   ..
     }
 
--- | Generates a base64-encoded `AuthnRequest` for SP initiated SSO, which
--- should be used as a query parameter named @SAMLRequest@.
-renderAuthnRequest :: AuthnRequest -> B.ByteString
-renderAuthnRequest AuthnRequest{..} =
-    Base64.encode $
-    BL.toStrict $
+-- | Renders an `AuthnRequest` for SP initiated SSO according to
+-- @urn:oasis:names:tc:SAML:2.0:bindings:URL-Encoding:DEFLATE@ and suitable for
+-- use with HTTP Redirect binding
+--
+-- The value should be sent as a query parameter named @SAMLRequest@
+renderUrlEncodingDeflate :: AuthnRequest -> B.ByteString
+renderUrlEncodingDeflate request =
+    urlEncode True $ Base64.encode $ BL.toStrict $ Deflate.compress $ renderXML request
+
+-- | Renders and base64-encodes an `AuthnRequest` for SP initiated SSO suitable
+-- for use with HTTP POST binding
+--
+-- If used in an HTTP POST binding, the value should be sent as an invisible
+-- form control named @SAMLRequest@
+renderBase64 :: AuthnRequest -> B.ByteString
+renderBase64 request = Base64.encode $ BL.toStrict $ renderXML request
+
+-- | Render an `AuthnRequest` as XML
+renderXML :: AuthnRequest -> BL.ByteString
+renderXML AuthnRequest{..} =
     renderLBS def $
     Document{
         documentPrologue = Prologue [] Nothing []
