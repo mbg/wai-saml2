@@ -34,6 +34,7 @@ module Network.Wai.SAML2 (
 
 import qualified Data.ByteString as BS
 import Data.Maybe (fromMaybe)
+import qualified Data.Text as T
 import qualified Data.Vault.Lazy as V
 
 import Network.Wai
@@ -104,7 +105,7 @@ saml2Callback cfg callback app req sendResponse = do
     let path = rawPathInfo req
 
     -- check if we need to handle this request
-    if | path == saml2AssertionPath cfg && isPOST req -> do
+    if path == saml2AssertionPath cfg && isPOST req then do
             -- default request parse options, but do not allow files;
             -- we are not expecting any
             let bodyOpts = setMaxRequestNumFiles 0
@@ -118,14 +119,22 @@ saml2Callback cfg callback app req sendResponse = do
                 Just val -> do
                     result <- validateResponse cfg val
                     let rs = lookup "RelayState" body
+                    let r = case result of
+                              Left e -> Left e
+                              Right (assertion, inResponseTo) ->
+                                Right Result
+                                       { assertion = assertion,
+                                         relayState = rs,
+                                         inResponseTo = inResponseTo}
+
                     -- call the callback
-                    callback  (Result rs <$> result) app req sendResponse
+                    callback r app req sendResponse
                 -- the request does not contain the expected payload
                 Nothing -> callback (Left InvalidRequest) app req sendResponse
 
-       -- not one of the paths we need to handle, pass the request on to the
-       -- inner application
-       | otherwise -> app req sendResponse
+    -- not one of the paths we need to handle, pass the request on to the
+    -- inner application
+    else app req sendResponse
 
 --------------------------------------------------------------------------------
 
@@ -208,7 +217,12 @@ data Result = Result {
     -- | An optional relay state, as provided in the POST request.
     relayState :: !(Maybe BS.ByteString),
     -- | The assertion obtained from the response that has been validated.
-    assertion :: !Assertion
+    assertion :: !Assertion,
+    -- | The ID of the request this result corresponds to to, if any. You
+    -- should check that it matches a request you generated
+    --
+    -- @since 0.4
+    inResponseTo :: !(Maybe T.Text)
 } deriving (Eq, Show)
 
 --------------------------------------------------------------------------------

@@ -31,6 +31,7 @@ import qualified Data.ByteString.Base64 as BS
 import qualified Data.ByteString.Lazy as LBS
 import Data.Default.Class
 import Data.Time
+import qualified Data.Text as T
 
 import Network.Wai.SAML2.XML.Encrypted
 import Network.Wai.SAML2.Config
@@ -49,13 +50,14 @@ import qualified Text.XML.Cursor as XML
 -- in Base64-encoded @responseData@.
 validateResponse :: SAML2Config
                  -> BS.ByteString
-                 -> IO (Either SAML2Error Assertion)
+                 -> IO (Either SAML2Error (Assertion, Response))
 validateResponse cfg responseData = runExceptT $ do
     -- get the current time
-    now <- liftIO $ getCurrentTime
+    now <- liftIO getCurrentTime
 
     (responseXmlDoc, samlResponse) <- decodeResponse responseData
-    validateSAMLResponse cfg responseXmlDoc samlResponse now
+    assertion <- validateSAMLResponse cfg responseXmlDoc samlResponse now
+    pure (assertion, samlResponse)
 
 -- | 'decodeResponse' @responseData@ decodes a SAML2 response contained
 -- in Base64-encoded @responseData@.
@@ -211,7 +213,7 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
     then throwError NotValid
     else pure ()
 
-    -- all checks out, return the assertion
+    -- all checks out, return the assertion and InResponseTo field
     pure assertion
 
 -- | `decryptAssertion` @key encryptedAssertion@ decrypts the AES key in

@@ -165,6 +165,8 @@ instance FromXML Conditions where
 --------------------------------------------------------------------------------
 
 -- | SAML2 authentication statements.
+
+-- Reference [AuthnStatement]
 data AuthnStatement = AuthnStatement {
     -- | The timestamp when the assertion was issued.
     authnStatementInstant :: !UTCTime,
@@ -270,3 +272,7 @@ instance FromXML Assertion where
         }
 
 --------------------------------------------------------------------------------
+
+-- Reference [AuthnStatement]
+--   Source: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf#page=26
+--   Section: 2.7.2 Element <AuthnStatement>
