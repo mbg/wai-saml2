@@ -8,6 +8,8 @@
 -- | Functions to process and validate SAML2 respones.
 module Network.Wai.SAML2.Validation (
     validateResponse,
+    decodeResponse,
+    validateSAMLResponse,
     ansiX923
 ) where
 
@@ -51,6 +53,13 @@ validateResponse cfg responseData = runExceptT $ do
     -- get the current time
     now <- liftIO $ getCurrentTime
 
+    (responseXmlDoc, samlResponse) <- ExceptT $ decodeResponse responseData
+    ExceptT $ validateSAMLResponse cfg responseXmlDoc samlResponse now
+
+-- | 'decodeResponse' @responseData@ decodes a SAML2 response contained
+-- in Base64-encoded @responseData@.
+decodeResponse :: BS.ByteString -> IO (Either SAML2Error (XML.Document, Response))
+decodeResponse responseData = runExceptT $ do
     -- the response data is Base64-encoded; decode it
     let resXmlDocData = BS.decodeLenient responseData
 
@@ -64,9 +73,18 @@ validateResponse cfg responseData = runExceptT $ do
     resParseResult <- liftIO $ try $
         parseXML (XML.fromDocument responseXmlDoc)
 
-    samlResponse <- case resParseResult of
+    case resParseResult of
         Left err -> throwError $ InvalidResponse err
-        Right samlResponse -> pure samlResponse
+        Right samlResponse -> pure (responseXmlDoc, samlResponse)
+
+-- | 'validateSAMLResponse' @cfg doc response timestamp@ validates a decoded SAML2
+-- response using the given @timestamp@.
+validateSAMLResponse :: SAML2Config
+                     -> XML.Document
+                     -> Response
+                     -> UTCTime
+                     -> IO (Either SAML2Error Assertion)
+validateSAMLResponse cfg responseXmlDoc samlResponse now = runExceptT $ do
 
     -- check that the response indicates success
     case responseStatusCode samlResponse of

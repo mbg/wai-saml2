@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* Added `decodeResponse` and `validateSAMLResponse`
 * Exported `NameID` (formerly `NameId`), and renamed `subjectNameId` to `subjectNameID`
 
 ## 0.3
