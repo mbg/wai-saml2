@@ -40,6 +40,8 @@ data SAML2Config = SAML2Config {
     -- | The audiences we are a member of. An assertions is only valid if we are
     -- a member of at least one of its audiences. Leaving this empty disables
     -- the check
+    --
+    -- @since 0.4
     saml2Audiences :: ![T.Text],
     -- | A value indicating whether to disable time validity checks. This
     -- should not be set to 'True' in a production environment, but may

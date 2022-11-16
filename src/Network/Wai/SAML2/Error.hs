@@ -56,6 +56,8 @@ data SAML2Error
     -- | The assertion is not valid.
     | NotValid
     -- | Audience restrictions don't match our audiences
+    --
+    -- @since 0.4
     | AudienceMismatch [T.Text]
     -- | A general crypto error occurred.
     | CryptoError CryptoError
