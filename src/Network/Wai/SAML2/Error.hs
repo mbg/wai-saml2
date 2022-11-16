@@ -55,6 +55,8 @@ data SAML2Error
     | InvalidDigest
     -- | The assertion is not valid.
     | NotValid
+    -- | Audience restrictions don't match our audiences
+    | AudienceMismatch [T.Text]
     -- | A general crypto error occurred.
     | CryptoError CryptoError
     -- | The request made to the configured endpoint is not valid.
