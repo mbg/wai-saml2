@@ -30,6 +30,7 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Base64 as BS
 import qualified Data.ByteString.Lazy as LBS
 import Data.Default.Class
+import Data.Foldable (any)
 import Data.Time
 
 import Network.Wai.SAML2.XML.Encrypted
@@ -207,10 +208,21 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
     -- validate that the assertion is valid at this point in time
     let Conditions{..} = assertionConditions assertion
 
-    if (now < conditionsNotBefore || now >= conditionsNotOnOrAfter) &&
-        not (saml2DisableTimeValidation cfg)
-    then throwError NotValid
-    else pure ()
+    -- Reference [NotBefore and NotOnOrAfter]
+    when ((now < conditionsNotBefore || now >= conditionsNotOnOrAfter) &&
+           not (saml2DisableTimeValidation cfg))
+          $ throwError NotValid
+
+    -- Reference [AudienceRestriction]
+    -- Note [Validating AudienceRestrictions]
+    case saml2Audiences cfg of
+        -- Check disabled
+        [] -> pure ()
+        ourAudiences ->
+           forM_ conditionsAudienceRestrictions $
+              \(AudienceRestriction audiences) ->
+                 unless (any (`elem` ourAudiences) audiences)
+                   $ throwError NotValid
 
     -- all checks out, return the assertion
     pure assertion
@@ -285,3 +297,22 @@ ansiX923 d
           (content,_) = BS.splitAt (len - padLen) d
 
 --------------------------------------------------------------------------------
+
+-- Reference [NotBefore and NotOnOrAfter]
+-- Source: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf#page=23
+-- Section: 2.5.1.2 Attributes NotBefore and NotOnOrAfter
+
+-- Reference [AudienceRestriction]
+-- Source: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf#page=23
+-- Section: 2.5.1.4 Elements <AudienceRestriction> and <Audience>
+
+-- Note [Validating AudienceRestrictions]
+--
+-- > Note that multiple <AudienceRestriction> elements MAY be included in a single
+-- > assertion, and each MUST be evaluated independently. The effect of this
+-- > requirement and the preceding definition is that within a given condition,
+-- > the audiences form a disjunction (an "OR") while multiple conditions form a
+-- > conjunction (an "AND").
+--
+-- Source: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf#page=24
+-- Lines 922-925
