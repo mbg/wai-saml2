@@ -3,6 +3,7 @@
 ## Unreleased
 
 * Exported `NameID` (formerly `NameId`), and renamed `subjectNameId` to `subjectNameID`
+* Support GHC 9.4 ([#36](https://github.com/mbg/wai-saml2/pull/36) by [@mbg](https://github.com/mbg))
 
 ## 0.3
 
