@@ -11,7 +11,7 @@ A Haskell library which implements SAML2 assertion validation as WAI middleware.
 
 There are currently a number of limitations to this library:
 
-* The library implements IdP-initiated authentication and has some support for SP-initiated authentication (See Network.Wai.SAML2.Request)
+* The library implements IdP-initiated authentication and has some support for SP-initiated authentication (See the documentation for the `Network.Wai.SAML2.Request` module)
 
 * The library does not currently support the full SAML2 specification and makes certain assumptions about what the IdP's responses contain. It will most likely fail with any IdPs which do not send responses in the same format. If you wish to use this library and encounter problems with your IdP, please open an issue or a pull request which implements support accordingly.
 
