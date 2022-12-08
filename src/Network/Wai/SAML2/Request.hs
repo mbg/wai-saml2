@@ -52,6 +52,7 @@ import Network.HTTP.Types (urlEncode)
 
 -- | Parameters for SP-initiated SSO
 data AuthnRequest
+    -- Reference [AuthnRequest]
     = AuthnRequest {
         -- | The time at which 'AuthnRequest' was created.
         authnRequestTimestamp :: !UTCTime
@@ -74,8 +75,8 @@ issueAuthnRequest
     -> IO AuthnRequest
 issueAuthnRequest authnRequestIssuer = do
     authnRequestTimestamp <- getCurrentTime
-    -- Azure AD does not accept an id starting with a number
-    -- https://learn.microsoft.com/en-us/azure/active-directory/develop/single-sign-on-saml-protocol
+    -- Digits are not allowed in initial position
+    -- Reference [ID Values]
     authnRequestID <- ("id" <>) . T.decodeUtf8 . Base16.encode <$> getRandomBytes 16
     pure AuthnRequest{
         authnRequestAllowCreate = True
@@ -105,6 +106,7 @@ renderBase64 request = Base64.encode $ BL.toStrict $ renderXML request
 renderXML :: AuthnRequest -> BL.ByteString
 renderXML AuthnRequest{..} =
     renderLBS def $
+    -- Reference [HTTP redirect binding]
     Document{
         documentPrologue = Prologue [] Nothing []
     ,   documentRoot = root
@@ -118,16 +120,18 @@ renderXML AuthnRequest{..} =
             (Map.fromList
                 [ ("xmlns:samlp", "urn:oasis:names:tc:SAML:2.0:protocol")
                 , ("xmlns:saml", "urn:oasis:names:tc:SAML:2.0:assertion")
-                , ("ID", authnRequestID)
-                , ("Version", "2.0")
-                , ("IssueInstant", timestamp)
-                , ("AssertionConsumerServiceIndex", "1")
+                , ("ID", authnRequestID) -- Reference [RequestAbstractType] and see [ID Values]
+                , ("Version", "2.0")  -- [RequestAbstractType]
+                , ("IssueInstant", timestamp) -- [RequestAbstractType]
+                , ("AssertionConsumerServiceIndex", "1") -- [AuthnRequest]
                 ])
             [NodeElement issuer, NodeElement nameIdPolicy]
+        -- Reference [RequestAbstractType]
         issuer = Element
             (saml2Name "Issuer")
             mempty
             [NodeContent authnRequestIssuer]
+        -- Reference [AuthnRequest]
         nameIdPolicy = Element
             (saml2pName "NameIDPolicy")
             (Map.fromList
@@ -138,3 +142,28 @@ renderXML AuthnRequest{..} =
             []
 
 -------------------------------------------------------------------------------
+
+-- Reference [RequestAbstractType]
+-- Source: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf#page=36
+-- Section: 3.2.1 Complex Type RequestAbstractType
+
+-- Reference [AuthnRequest]
+-- Source: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf#page=48
+-- Section: 3.4.1 Element <AuthnRequest>
+
+-- Reference [HTTP redirect binding]
+-- Source:
+-- https://docs.oasis-open.org/security/saml/v2.0/saml-bindings-2.0-os.pdf#page=15
+-- Section: 3.4 HTTP Redirect Binding
+
+-- Reference [ID Values]
+-- Source: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf#page=9
+-- Section: 1.3.4 ID and ID Reference Values
+-- Note: ID Values must conform to "xs:ID", which in turn has a restriction of "xs:NCName" (non-colonized name).
+-- In practice that means they are a string consisting of
+-- first 1 of: Letter or '_'
+-- then 0 or more of: Letter, Digit, '.', '-', '_',  CombiningChar, Extender
+--
+-- Definitions of character classes: https://www.w3.org/TR/2000/WD-xml-2e-20000814#CharClasses
+-- Compare e.g. https://stackoverflow.com/questions/1631396/what-is-an-xsncname-type-and-when-should-it-be-used
+--and https://www.w3.org/TR/xmlschema-2/#dt-ccesN (see \i and \c, bute not that colons are excluded)

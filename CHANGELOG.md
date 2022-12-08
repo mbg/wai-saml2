@@ -5,6 +5,7 @@
 * Split `validateResponse` into `decodeResponse` and `validateSAMLResponse` ([#31](https://github.com/mbg/wai-saml2/pull/31) by [@fumieval](https://github.com/fumieval))
 * Exported `NameID` (formerly `NameId`), and renamed `subjectNameId` to `subjectNameID`
 * Support GHC 9.4 ([#36](https://github.com/mbg/wai-saml2/pull/36) by [@mbg](https://github.com/mbg))
+* Add new module `Network.Wai.SAML2.Request` with `AuthnRequest` generation for SP-initiated login flow ([#19](https://github.com/mbg/wai-saml2/pull/19) by [@fumieval](https://github.com/fumieval))
 
 ## 0.3
 
