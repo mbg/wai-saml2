@@ -8,7 +8,8 @@
 -- | Configuration types and smart constructors for the SAML2 middleware.
 module Network.Wai.SAML2.Config (
     SAML2Config(..),
-    saml2Config
+    saml2Config,
+    saml2ConfigNoEncryption
 ) where
 
 --------------------------------------------------------------------------------
@@ -26,7 +27,8 @@ data SAML2Config = SAML2Config {
     saml2AssertionPath :: !BS.ByteString,
     -- | The service provider's private key, used to decrypt data from
     -- the identity provider.
-    saml2PrivateKey :: !PrivateKey,
+    -- when set to Nothing, it rejects encrypted assertions.
+    saml2PrivateKey :: !(Maybe PrivateKey),
     -- | The identity provider's public key, used to validate
     -- signatures.
     saml2PublicKey :: !PublicKey,
@@ -47,15 +49,28 @@ data SAML2Config = SAML2Config {
 -- with the most basic set of options possible using @privateKey@ as the
 -- SP's private key and @publicKey@ as the IdP's public key. You should
 -- almost certainly change the resulting settings.
+-- This requires encrypted assertions by default.
 saml2Config :: PrivateKey -> PublicKey -> SAML2Config
-saml2Config privKey pubKey = SAML2Config{
+saml2Config privKey pubKey = (saml2ConfigNoEncryption pubKey){
+    saml2PrivateKey = Just privKey,
+    saml2RequireEncryptedAssertion = True
+}
+
+-- | 'saml2ConfigNoEncryption' @publicKey@ constructs a 'SAML2Config' value
+-- with the most basic set of options possible using @publicKey@ as the
+-- IdP's public key. You should almost certainly change the resulting settings.
+--
+-- @since 0.4.0.0
+--
+saml2ConfigNoEncryption :: PublicKey -> SAML2Config
+saml2ConfigNoEncryption pubKey = SAML2Config{
     saml2AssertionPath = "/sso/assert",
-    saml2PrivateKey = privKey,
+    saml2PrivateKey = Nothing,
     saml2PublicKey = pubKey,
     saml2ExpectedIssuer = Nothing,
     saml2ExpectedDestination = Nothing,
     saml2DisableTimeValidation = False,
-    saml2RequireEncryptedAssertion = True
+    saml2RequireEncryptedAssertion = False
 }
 
 --------------------------------------------------------------------------------

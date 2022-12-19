@@ -61,6 +61,8 @@ data SAML2Error
     | InvalidRequest
     -- | The configuration requires an encrypted assertion, but got a plaintext assertion.
     | EncryptedAssertionRequired
+    -- | The configuration does not support decryption, but got an encrypted assertion.
+    | EncryptedAssertionNotSupported
     deriving Show
 
 --------------------------------------------------------------------------------
