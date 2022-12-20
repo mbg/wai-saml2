@@ -35,7 +35,6 @@ module Network.Wai.SAML2 (
 import qualified Data.ByteString as BS
 import Data.Functor ((<&>))
 import Data.Maybe (fromMaybe)
-import qualified Data.Text as T
 import qualified Data.Vault.Lazy as V
 
 import Network.Wai
