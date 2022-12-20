@@ -9,7 +9,7 @@
 * Changed the `saml2PrivateKey` field to be optional and added `saml2ConfigNoEncryption` which takes a `PublicKey` only
 * Added `showUTCTime` to `Network.Wai.SAML2.XML`
 * Added a new module `Network.Wai.SAML2.NameIDFormat`
-* Added new field `inResponseTo` to `Result` type
+* Added new field `response` to `Result` ([#33](https://github.com/mbg/wai-saml2/pull/33) by [@Philonous](https://github.com/Philonous))
 
 ## 0.3
 
