@@ -213,7 +213,7 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
     then throwError NotValid
     else pure ()
 
-    -- all checks out, return the assertion and InResponseTo field
+    -- all checks out, return the assertion
     pure assertion
 
 -- | `decryptAssertion` @key encryptedAssertion@ decrypts the AES key in
