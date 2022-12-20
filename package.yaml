@@ -17,7 +17,6 @@ extra-source-files:
 
 default-extensions:
 - OverloadedStrings
-- MultiWayIf
 - RecordWildCards
 - FlexibleInstances
 

@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.0.
+-- This file has been generated from package.yaml by hpack version 0.34.7.
 --
 -- see: https://github.com/sol/hpack
 
@@ -54,7 +54,6 @@ library
       src
   default-extensions:
       OverloadedStrings
-      MultiWayIf
       RecordWildCards
       FlexibleInstances
   ghc-options: -W
@@ -89,7 +88,6 @@ test-suite parser
       tests
   default-extensions:
       OverloadedStrings
-      MultiWayIf
       RecordWildCards
       FlexibleInstances
   ghc-options: -Wall -Wcompat
