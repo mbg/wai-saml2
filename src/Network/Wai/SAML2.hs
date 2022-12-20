@@ -33,6 +33,7 @@ module Network.Wai.SAML2 (
 --------------------------------------------------------------------------------
 
 import qualified Data.ByteString as BS
+import Data.Functor ((<&>))
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import qualified Data.Vault.Lazy as V
@@ -118,18 +119,16 @@ saml2Callback cfg callback app req sendResponse = do
 
             case lookup "SAMLResponse" body of
                 Just val -> do
-                    result <- validateResponse cfg val
                     let rs = lookup "RelayState" body
-                    let r = case result of
-                              Left e -> Left e
-                              Right (assertion, response) ->
-                                Right Result
-                                       { assertion = assertion,
-                                         relayState = rs,
-                                         response = response}
+                    result <- validateResponse cfg val <&>
+                                  fmap (\(assertion, response) ->
+                                          Result
+                                          { assertion = assertion,
+                                            relayState = rs,
+                                            response = response})
 
                     -- call the callback
-                    callback r app req sendResponse
+                    callback result app req sendResponse
                 -- the request does not contain the expected payload
                 Nothing -> callback (Left InvalidRequest) app req sendResponse
 
