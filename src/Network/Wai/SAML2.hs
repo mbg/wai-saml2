@@ -43,6 +43,7 @@ import Network.Wai.SAML2.Config
 import Network.Wai.SAML2.Validation
 import Network.Wai.SAML2.Assertion
 import Network.Wai.SAML2.Error
+import qualified Network.Wai.SAML2.Response as SAML2
 
 import System.IO.Unsafe (unsafePerformIO)
 
@@ -121,11 +122,11 @@ saml2Callback cfg callback app req sendResponse = do
                     let rs = lookup "RelayState" body
                     let r = case result of
                               Left e -> Left e
-                              Right (assertion, inResponseTo) ->
+                              Right (assertion, response) ->
                                 Right Result
                                        { assertion = assertion,
                                          relayState = rs,
-                                         inResponseTo = inResponseTo}
+                                         response = response}
 
                     -- call the callback
                     callback r app req sendResponse
@@ -222,7 +223,7 @@ data Result = Result {
     -- should check that it matches a request you generated
     --
     -- @since 0.4
-    inResponseTo :: !(Maybe T.Text)
+    response :: !SAML2.Response
 } deriving (Eq, Show)
 
 --------------------------------------------------------------------------------
