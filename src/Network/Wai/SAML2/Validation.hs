@@ -22,6 +22,7 @@ import Crypto.Error
 import Crypto.Hash
 import qualified Crypto.PubKey.RSA.OAEP as OAEP
 import Crypto.PubKey.RSA.PKCS15 as PKCS15
+import Crypto.PubKey.RSA.Types (PrivateKey)
 import Crypto.Cipher.AES
 import Crypto.Cipher.Types
 
@@ -193,7 +194,9 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
     else throwError InvalidSignature
 
     assertion <- case responseEncryptedAssertion samlResponse of
-        Just encrypted -> decryptAssertion cfg encrypted
+        Just encrypted -> case saml2PrivateKey cfg of
+            Just pk -> decryptAssertion pk encrypted
+            Nothing -> throwError EncryptedAssertionNotSupported
         Nothing
             | saml2RequireEncryptedAssertion cfg -> throwError EncryptedAssertionRequired
             | otherwise -> case responseAssertion samlResponse of
@@ -211,14 +214,11 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
     -- all checks out, return the assertion
     pure assertion
 
-decryptAssertion :: SAML2Config -> EncryptedAssertion -> ExceptT SAML2Error IO Assertion
-decryptAssertion cfg encryptedAssertion = do
-    --  ***ASSERTION DECRYPTION***
-    -- the SAML assertion is AES-encrypted and we need to acquire the key
-    -- to decrypt it; the key itself is RSA-encrypted:
-    -- get the private key from the configuration and use it to decrypt
-    -- the key used to decrypt the assertion
-    let pk = saml2PrivateKey cfg
+-- | `decryptAssertion` @key encryptedAssertion@ decrypts the AES key in
+-- @encryptedAssertion@ using `key`, then decrypts the contents using
+-- the AES key.
+decryptAssertion :: PrivateKey -> EncryptedAssertion -> ExceptT SAML2Error IO Assertion
+decryptAssertion pk encryptedAssertion = do
 
     oaepResult <- liftIO $ OAEP.decryptSafer (OAEP.defaultOAEPParams SHA1) pk
         $ BS.decodeLenient
