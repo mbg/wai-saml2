@@ -17,7 +17,6 @@ module Network.Wai.SAML2.XML (
     -- * Utility functions
     toMaybeText,
     parseUTCTime,
-    timeFormat,
 
     -- * XML parsing
     FromXML(..),
@@ -28,6 +27,7 @@ module Network.Wai.SAML2.XML (
 
 import qualified Data.Text as T
 import Data.Time
+import Data.Time.Format.ISO8601 (iso8601ParseM)
 
 import Text.XML
 import Text.XML.Cursor
@@ -70,14 +70,9 @@ toMaybeText :: [T.Text] -> Maybe T.Text
 toMaybeText [] = Nothing
 toMaybeText xs = Just $ T.concat xs
 
--- | The time format used by SAML2.
-timeFormat :: String
-timeFormat = "%Y-%m-%dT%H:%M:%S%QZ"
-
 -- | 'parseUTCTime' @text@ parses @text@ into a 'UTCTime' value.
 parseUTCTime :: MonadFail m => T.Text -> m UTCTime
-parseUTCTime value =
-    parseTimeM False defaultTimeLocale timeFormat (T.unpack value)
+parseUTCTime = iso8601ParseM . T.unpack
 
 -- | A class of types which can be parsed from XML.
 class FromXML a where
