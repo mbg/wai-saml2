@@ -32,7 +32,6 @@ module Network.Wai.SAML2.Request (
 import Crypto.Random
 
 import Data.Time.Clock
-import Data.Time.Format.ISO8601 (iso8601Show)
 
 import Network.Wai.SAML2.XML
 
@@ -113,7 +112,7 @@ renderXML AuthnRequest{..} =
     ,   documentEpilogue = []
     }
     where
-        timestamp = T.pack $ iso8601Show authnRequestTimestamp
+        timestamp = showUTCTime authnRequestTimestamp
         root = Element
             (saml2pName "AuthnRequest")
             (Map.fromList
