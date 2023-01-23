@@ -16,6 +16,7 @@ module Network.Wai.SAML2.XML (
 
     -- * Utility functions
     toMaybeText,
+    showUTCTime,
     parseUTCTime,
 
     -- * XML parsing
@@ -69,6 +70,17 @@ mdName name =
 toMaybeText :: [T.Text] -> Maybe T.Text
 toMaybeText [] = Nothing
 toMaybeText xs = Just $ T.concat xs
+
+-- | The time format used by SAML2.
+timeFormat :: String
+timeFormat = "%Y-%m-%dT%H:%M:%S%6QZ"
+
+-- | Display a 'UTCTime' to an ISO8601 timestamp up to microseconds.
+--
+-- @since 0.4.0.0
+--
+showUTCTime :: UTCTime -> T.Text
+showUTCTime = T.pack . formatTime defaultTimeLocale timeFormat
 
 -- | 'parseUTCTime' @text@ parses @text@ into a 'UTCTime' value.
 parseUTCTime :: MonadFail m => T.Text -> m UTCTime
