@@ -33,6 +33,7 @@ import Crypto.Random
 
 import Data.Time.Clock
 
+import Network.Wai.SAML2.NameIDFormat
 import Network.Wai.SAML2.XML
 
 import Text.XML
@@ -63,7 +64,7 @@ data AuthnRequest
         -- | Allow IdP to generate a new identifier
     ,   authnRequestAllowCreate :: !Bool
         -- | The URI reference corresponding to a name identifier format
-    ,   authnRequestNameIDFormat :: !T.Text
+    ,   authnRequestNameIDFormat :: !NameIDFormat
     }
     deriving (Eq, Show)
 
@@ -79,8 +80,7 @@ issueAuthnRequest authnRequestIssuer = do
     authnRequestID <- ("id" <>) . T.decodeUtf8 . Base16.encode <$> getRandomBytes 16
     pure AuthnRequest{
         authnRequestAllowCreate = True
-    ,   authnRequestNameIDFormat =
-            "urn:oasis:names:tc:SAML:2.0:nameid-format:transient"
+    ,   authnRequestNameIDFormat = Transient
     ,   ..
     }
 
@@ -135,7 +135,7 @@ renderXML AuthnRequest{..} =
             (Map.fromList
                 [ ("allowCreate"
                     , if authnRequestAllowCreate then "true" else "false")
-                , ("Format", authnRequestNameIDFormat)
+                , ("Format", showNameIDFormat authnRequestNameIDFormat)
                 ])
             []
 

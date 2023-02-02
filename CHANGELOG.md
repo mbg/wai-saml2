@@ -8,6 +8,7 @@
 * Add new module `Network.Wai.SAML2.Request` with `AuthnRequest` generation for SP-initiated login flow ([#19](https://github.com/mbg/wai-saml2/pull/19) by [@fumieval](https://github.com/fumieval))
 * Changed the `saml2PrivateKey` field to be optional and added `saml2ConfigNoEncryption` which takes a `PublicKey` only
 * Added `showUTCTime` to `Network.Wai.SAML2.XML`
+* Added a new module `Network.Wai.SAML2.NameIDFormat`
 
 ## 0.3
 
