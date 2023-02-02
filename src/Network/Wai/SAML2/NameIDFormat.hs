@@ -11,7 +11,8 @@
 -- of the identifier in an assertion.
 module Network.Wai.SAML2.NameIDFormat (
     NameIDFormat(..),
-    parseNameIDFormat
+    parseNameIDFormat,
+    showNameIDFormat
 ) where
 
 import Data.Text (Text, unpack)
@@ -63,3 +64,20 @@ parseNameIDFormat = \case
     "urn:oasis:names:tc:SAML:2.0:nameid-format:provider" -> pure Provider
     "urn:oasis:names:tc:SAML:2.0:nameid-format:transient" -> pure Transient
     unknown -> fail $ "parseNameIDFormat: unknown format " <> unpack unknown
+
+-- | Display 'NameIDFormat' as a Text.
+--
+-- @since 0.4.0.0
+--
+showNameIDFormat :: NameIDFormat -> Text
+showNameIDFormat = \case
+    KerberosPrincipalName -> "urn:oasis:names:tc:SAML:1.1:nameid-format:Kerberos"
+    WindowsDomainQualifiedName -> "urn:oasis:names:tc:SAML:1.1:nameid-format:WindowsDomainQualifiedName"
+    X509SubjectName -> "urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName"
+    EmailAddress -> "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+    Unspecified -> "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"
+    Entity -> "urn:oasis:names:tc:SAML:2.0:nameid-format:entity"
+    Federated -> "urn:oasis:names:tc:SAML:2.0:nameid-format:federated"
+    Persistent -> "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+    Provider -> "urn:oasis:names:tc:SAML:2.0:nameid-format:provider"
+    Transient -> "urn:oasis:names:tc:SAML:2.0:nameid-format:transient"
