@@ -1,50 +1,50 @@
-name:                wai-saml2
-version:             0.3.0.1
-github:              "mbg/wai-saml2"
-license:             MIT
-author:              "Michael B. Gale"
-maintainer:          "github@michael-gale.co.uk"
-copyright:           "Copyright (c) Michael B. Gale"
+name: wai-saml2
+version: 0.3.0.1
+github: "mbg/wai-saml2"
+license: MIT
+author: "Michael B. Gale"
+maintainer: "github@michael-gale.co.uk"
+copyright: "Copyright (c) Michael B. Gale"
 
-category:            Security
-synopsis:            "SAML2 assertion validation as WAI middleware"
-description:         "A Haskell library which implements SAML2 assertion validation as WAI middleware"
+category: Security
+synopsis: "SAML2 assertion validation as WAI middleware"
+description: "A Haskell library which implements SAML2 assertion validation as WAI middleware"
 
 extra-source-files:
-- README.md
-- CHANGELOG.md
-- tests/data/**
+  - README.md
+  - CHANGELOG.md
+  - tests/data/**
 
 default-extensions:
-- OverloadedStrings
-- RecordWildCards
-- FlexibleInstances
+  - FlexibleInstances
+  - OverloadedStrings
+  - RecordWildCards
 
 dependencies:
-- base >= 4.8 && < 5
-- text < 2.1
-- bytestring >= 0.9 && < 0.12
-- base16-bytestring >= 0.1 && < 1.1
-- base64-bytestring >= 0.1 && < 2
-- containers >= 0.6 && <0.7
-- data-default-class < 1
-- http-types < 1
-- wai >= 3.0 && < 4
-- wai-extra >= 3.0 && < 4
-- vault >= 0.3 && < 1
-- cryptonite < 1
-- x509 < 2
-- x509-store < 2
-- xml-conduit < 2
-- time >= 1.9 && < 2
-- mtl >= 2.2.1 && < 3
-- c14n >= 0.1.0.1 && < 1
-- zlib >= 0.6.0.0 && < 0.7
-- network-uri >= 2.0 && < 3
+  - base >= 4.8 && < 5
+  - base16-bytestring >= 0.1 && < 1.1
+  - base64-bytestring >= 0.1 && < 2
+  - bytestring >= 0.9 && < 0.12
+  - c14n >= 0.1.0.1 && < 1
+  - containers >= 0.6 && <0.7
+  - cryptonite < 1
+  - data-default-class < 1
+  - http-types < 1
+  - mtl >= 2.2.1 && < 3
+  - network-uri >= 2.0 && < 3
+  - text < 2.1
+  - time >= 1.9 && < 2
+  - vault >= 0.3 && < 1
+  - wai >= 3.0 && < 4
+  - wai-extra >= 3.0 && < 4
+  - x509 < 2
+  - x509-store < 2
+  - xml-conduit < 2
+  - zlib >= 0.6.0.0 && < 0.7
 
 library:
-    source-dirs: src
-    ghc-options:
+  source-dirs: src
+  ghc-options:
     - -W
 
 tests:
@@ -53,11 +53,11 @@ tests:
     source-dirs: tests
     ghc-options: -Wall -Wcompat
     dependencies:
-    - base
-    - bytestring
-    - filepath
-    - pretty-show
-    - tasty
-    - tasty-golden
-    - wai-saml2
-    - xml-conduit
+      - base
+      - bytestring
+      - filepath
+      - pretty-show
+      - tasty
+      - tasty-golden
+      - wai-saml2
+      - xml-conduit

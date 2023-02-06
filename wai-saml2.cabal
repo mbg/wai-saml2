@@ -53,9 +53,9 @@ library
   hs-source-dirs:
       src
   default-extensions:
+      FlexibleInstances
       OverloadedStrings
       RecordWildCards
-      FlexibleInstances
   ghc-options: -W
   build-depends:
       base >=4.8 && <5
@@ -88,9 +88,9 @@ test-suite parser
   hs-source-dirs:
       tests
   default-extensions:
+      FlexibleInstances
       OverloadedStrings
       RecordWildCards
-      FlexibleInstances
   ghc-options: -Wall -Wcompat
   build-depends:
       base

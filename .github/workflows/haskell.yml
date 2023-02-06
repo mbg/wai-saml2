@@ -35,7 +35,7 @@ jobs:
         with:
           stack-no-global: true
           enable-stack: true
-          stack-version: 'latest'
+          stack-version: "latest"
 
       - name: Cache .stack
         id: cache-stack

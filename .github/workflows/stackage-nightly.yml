@@ -16,7 +16,7 @@ jobs:
         with:
           stack-no-global: true
           enable-stack: true
-          stack-version: 'latest'
+          stack-version: "latest"
 
       - name: Build with the nightly snapshot
         run: |
