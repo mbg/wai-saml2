@@ -58,7 +58,10 @@ Response
               Conditions
                 { conditionsNotBefore = 2022-09-20 10:25:41.151 UTC
                 , conditionsNotOnOrAfter = 2022-09-20 10:35:41.151 UTC
-                , conditionsAudience = "https://v1.herp.cloud/"
+                , conditionsAudienceRestrictions =
+                    [ AudienceRestriction
+                        { audienceRestrictionAudience = [ "https://v1.herp.cloud/" ] }
+                    ]
                 }
           , assertionAuthnStatement =
               AuthnStatement

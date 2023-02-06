@@ -12,6 +12,7 @@ module Network.Wai.SAML2.Assertion (
     Subject(..),
     NameID(..),
     Conditions(..),
+    AudienceRestriction(..),
     AuthnStatement(..),
     AssertionAttribute(..),
     AttributeStatement,
@@ -136,16 +137,40 @@ instance FromXML Subject where
 
 --------------------------------------------------------------------------------
 
+-- | An audience restriction.
+
+-- Reference [AudienceRestriction]
+data AudienceRestriction = AudienceRestriction {
+    -- | A URI reference that identifies an intended audience. For the
+    -- corresponding assertion to be valid, the client has to be a member of one
+    -- or more of these audiences
+    audienceRestrictionAudience :: ![T.Text]
+} deriving (Eq, Show)
+
+-- Reference [AudienceRestriction]
+instance FromXML AudienceRestriction where
+    parseXML cursor =
+        pure AudienceRestriction{
+            audienceRestrictionAudience =
+                let elements = cursor $/ element (saml2Name "Audience")
+                in [ T.concat $ element $/ content
+                   | element <- elements
+                   ]
+        }
+
 -- | Conditions under which a SAML assertion is issued.
+
+-- Reference [Conditions]
 data Conditions = Conditions {
     -- | The time when the assertion is valid from (inclusive).
     conditionsNotBefore :: !UTCTime,
     -- | The time the assertion is valid to (not inclusive).
     conditionsNotOnOrAfter :: !UTCTime,
     -- | The intended audience of the assertion.
-    conditionsAudience :: !T.Text
+    conditionsAudienceRestrictions :: ![AudienceRestriction]
 } deriving (Eq, Show)
 
+-- Reference [Conditions]
 instance FromXML Conditions where
     parseXML cursor = do
         notBefore <- parseUTCTime $
@@ -156,10 +181,9 @@ instance FromXML Conditions where
         pure Conditions{
             conditionsNotBefore = notBefore,
             conditionsNotOnOrAfter = notOnOrAfter,
-            conditionsAudience = T.concat $
+            conditionsAudienceRestrictions =
                 cursor $/ element (saml2Name "AudienceRestriction")
-                    &/ element (saml2Name "Audience")
-                    &/ content
+                    >=> parseXML
         }
 
 --------------------------------------------------------------------------------
@@ -226,6 +250,8 @@ parseAttributeStatement cursor =
 --------------------------------------------------------------------------------
 
 -- | Represents a SAML2 assertion.
+
+-- Reference [Assertion]
 data Assertion = Assertion {
     -- | The unique ID of this assertion. It is important to keep track of
     -- these in order to avoid replay attacks.
@@ -244,6 +270,7 @@ data Assertion = Assertion {
     assertionAttributeStatement :: !AttributeStatement
 } deriving (Eq, Show)
 
+-- Reference [Assertion]
 instance FromXML Assertion where
     parseXML cursor = do
         issueInstant <- parseUTCTime $
@@ -276,3 +303,15 @@ instance FromXML Assertion where
 -- Reference [AuthnStatement]
 --   Source: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf#page=26
 --   Section: 2.7.2 Element <AuthnStatement>
+
+-- Reference [Assertion]
+-- Source: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf#page=15
+-- Section 2.3.3 Element <Assertion>
+
+-- Reference [Conditions]
+-- Source: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf#page=21
+-- 2.5.1 Element <Conditions>
+
+-- Reference [AudienceRestriction]
+-- Source: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf#page=23
+-- Section: 2.5.1.4 Elements <AudienceRestriction> and <Audience>
