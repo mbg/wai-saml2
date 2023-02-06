@@ -11,6 +11,7 @@
 * Added a new module `Network.Wai.SAML2.NameIDFormat`
 * Added new field `response` to `Result` which contains the full, decoded SAML response ([#33](https://github.com/mbg/wai-saml2/pull/33) by [@Philonous](https://github.com/Philonous))
 * Validate audience restrictions  ([#35](https://github.com/mbg/wai-saml2/pull/35) by [@Philonous](https://github.com/Philonous))
+* Handle status codes according to the SAML2 specification ([#42](https://github.com/mbg/wai-saml2/pull/42)) by [@mbg](https://github.com/mbg)
 
 ## 0.3
 
