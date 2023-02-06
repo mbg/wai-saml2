@@ -10,7 +10,7 @@
 * Added `showUTCTime` to `Network.Wai.SAML2.XML`
 * Added a new module `Network.Wai.SAML2.NameIDFormat`
 * Added new field `response` to `Result` which contains the full, decoded SAML response ([#33](https://github.com/mbg/wai-saml2/pull/33) by [@Philonous](https://github.com/Philonous))
-* Validate audience restrictions  (https://github.com/mbg/wai-saml2/issues/34)
+* Validate audience restrictions  ([#35](https://github.com/mbg/wai-saml2/pull/35) by [@Philonous](https://github.com/Philonous))
 
 ## 0.3
 
