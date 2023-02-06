@@ -59,7 +59,8 @@ dsName :: T.Text -> Name
 dsName name =
     Name name (Just "http://www.w3.org/2000/09/xmldsig#") (Just "ds")
 
--- urn:oasis:names:tc:SAML:2.0:metadata namespace
+-- | `mdName` @name@ constructs a `Name` for @name@ in the
+-- @urn:oasis:names:tc:SAML:2.0:metadata@ namespace.
 mdName :: T.Text -> Name
 mdName name =
     Name name (Just "urn:oasis:names:tc:SAML:2.0:metadata") (Just "md")
@@ -75,7 +76,8 @@ toMaybeText xs = Just $ T.concat xs
 timeFormat :: String
 timeFormat = "%Y-%m-%dT%H:%M:%S%6QZ"
 
--- | Display a 'UTCTime' to an ISO8601 timestamp up to microseconds.
+-- | Display a 'UTCTime' as an ISO8601 timestamp including up to
+-- 6 digits for the microseconds.
 --
 -- @since 0.4.0.0
 --

@@ -87,6 +87,8 @@ instance FromXML SubjectConfirmation where
 -- | The @<NameID>@ of a subject.
 -- See http://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0-cd-02.html#4.4.2.Assertion,%20Subject,%20and%20Statement%20Structure|outline
 -- and https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf#page=13
+--
+-- @since 0.4
 data NameID = NameID {
     -- | The domain that qualifies the name. Allows names from different sources
     -- to used together without colliding
@@ -138,6 +140,8 @@ instance FromXML Subject where
 --------------------------------------------------------------------------------
 
 -- | An audience restriction.
+--
+-- @since 0.4
 
 -- Reference [AudienceRestriction]
 data AudienceRestriction = AudienceRestriction {
@@ -167,6 +171,8 @@ data Conditions = Conditions {
     -- | The time the assertion is valid to (not inclusive).
     conditionsNotOnOrAfter :: !UTCTime,
     -- | The intended audience of the assertion.
+    --
+    -- @since 0.4
     conditionsAudienceRestrictions :: ![AudienceRestriction]
 } deriving (Eq, Show)
 

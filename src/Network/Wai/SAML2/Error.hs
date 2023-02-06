@@ -55,7 +55,7 @@ data SAML2Error
     | InvalidDigest
     -- | The assertion is not valid.
     | NotValid
-    -- | Audience restrictions don't match our audiences
+    -- | Audience restrictions don't match our audiences.
     --
     -- @since 0.4
     | AudienceMismatch [T.Text]
@@ -63,9 +63,15 @@ data SAML2Error
     | CryptoError CryptoError
     -- | The request made to the configured endpoint is not valid.
     | InvalidRequest
-    -- | The configuration requires an encrypted assertion, but got a plaintext assertion.
+    -- | The configuration requires an encrypted assertion, but got a
+    -- plaintext assertion.
+    --
+    -- @since 0.4
     | EncryptedAssertionRequired
-    -- | The configuration does not support decryption, but got an encrypted assertion.
+    -- | The configuration does not support decryption, but got an encrypted
+    -- assertion.
+    --
+    -- @since 0.4
     | EncryptedAssertionNotSupported
     deriving Show
 

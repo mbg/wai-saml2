@@ -40,7 +40,7 @@ import Network.Wai.SAML2.Signature
 data Response = Response {
     -- | The intended destination of this response.
     responseDestination :: !T.Text,
-    -- | The ID of the request this responds corresponds to, if any
+    -- | The ID of the request this responds corresponds to, if any.
     --
     -- @since 0.4
     responseInResponseTo :: !(Maybe T.Text),
@@ -57,8 +57,12 @@ data Response = Response {
     -- | The response signature.
     responseSignature :: !Signature,
     -- | The unencrypted assertion.
+    --
+    -- @since 0.4
     responseAssertion :: !(Maybe Assertion),
     -- | The encrypted assertion.
+    --
+    -- @since 0.4
     responseEncryptedAssertion :: !(Maybe EncryptedAssertion)
 } deriving (Eq, Show)
 

@@ -4,19 +4,27 @@
 -- This source code is licensed under the MIT license found in the LICENSE    --
 -- file in the root directory of this source tree.                            --
 --------------------------------------------------------------------------------
+
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE LambdaCase #-}
 
--- | This modules defines 'NameIDFormat', the datatype specifying the format
--- of the identifier in an assertion.
+-- | This modules defines the `NameIDFormat` type, which specifies the format
+-- of name identifiers in an assertion.
+--
+-- @since 0.4
 module Network.Wai.SAML2.NameIDFormat (
     NameIDFormat(..),
     parseNameIDFormat,
     showNameIDFormat
 ) where
 
-import Data.Text (Text, unpack)
+--------------------------------------------------------------------------------
+
 import GHC.Generics (Generic)
+
+import Data.Text (Text, unpack)
+
+--------------------------------------------------------------------------------
 
 -- | Format of the subject identifier.
 -- See 8.3 Name Identifier Format Identifiers in https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf
@@ -65,10 +73,7 @@ parseNameIDFormat = \case
     "urn:oasis:names:tc:SAML:2.0:nameid-format:transient" -> pure Transient
     unknown -> fail $ "parseNameIDFormat: unknown format " <> unpack unknown
 
--- | Display 'NameIDFormat' as a Text.
---
--- @since 0.4.0.0
---
+-- | Displays a `NameIDFormat` value as a `Text` value.
 showNameIDFormat :: NameIDFormat -> Text
 showNameIDFormat = \case
     KerberosPrincipalName -> "urn:oasis:names:tc:SAML:1.1:nameid-format:Kerberos"
@@ -81,3 +86,5 @@ showNameIDFormat = \case
     Persistent -> "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
     Provider -> "urn:oasis:names:tc:SAML:2.0:nameid-format:provider"
     Transient -> "urn:oasis:names:tc:SAML:2.0:nameid-format:transient"
+
+--------------------------------------------------------------------------------

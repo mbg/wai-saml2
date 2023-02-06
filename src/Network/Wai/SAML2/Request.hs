@@ -19,6 +19,8 @@
 --   Section 3.5 HTTP POST Binding
 -- * [2] https://docs.oasis-open.org/security/saml/v2.0/saml-bindings-2.0-os.pdf#page=15
 --   Section 3.4 HTTP Redirect Binding
+--
+-- @since 0.4
 module Network.Wai.SAML2.Request (
     AuthnRequest(..),
     issueAuthnRequest,

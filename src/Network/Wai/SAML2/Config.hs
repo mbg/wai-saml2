@@ -48,6 +48,8 @@ data SAML2Config = SAML2Config {
     -- be useful for testing purposes.
     saml2DisableTimeValidation :: !Bool,
     -- | Always decrypt assertions using 'saml2PrivateKey' and reject plaintext assertions.
+    --
+    -- @since 0.4
     saml2RequireEncryptedAssertion :: !Bool
 }
 

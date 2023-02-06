@@ -60,6 +60,8 @@ validateResponse cfg responseData = runExceptT $ do
 
 -- | 'decodeResponse' @responseData@ decodes a SAML2 response contained
 -- in Base64-encoded @responseData@.
+--
+-- @since 0.4
 decodeResponse :: BS.ByteString -> ExceptT SAML2Error IO (XML.Document, Response)
 decodeResponse responseData = do
     -- the response data is Base64-encoded; decode it
@@ -81,6 +83,8 @@ decodeResponse responseData = do
 
 -- | 'validateSAMLResponse' @cfg doc response timestamp@ validates a decoded SAML2
 -- response using the given @timestamp@.
+--
+-- @since 0.4
 validateSAMLResponse :: SAML2Config
                      -> XML.Document
                      -> Response
@@ -229,6 +233,8 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
 -- | `decryptAssertion` @key encryptedAssertion@ decrypts the AES key in
 -- @encryptedAssertion@ using `key`, then decrypts the contents using
 -- the AES key.
+--
+-- @since 0.4
 decryptAssertion :: PrivateKey -> EncryptedAssertion -> ExceptT SAML2Error IO Assertion
 decryptAssertion pk encryptedAssertion = do
 

@@ -4,25 +4,33 @@
 -- This source code is licensed under the MIT license found in the LICENSE    --
 -- file in the root directory of this source tree.                            --
 --------------------------------------------------------------------------------
+
 {-# LANGUAGE LambdaCase #-}
 
--- | This module provides a datatype for IDP metadata containing certificate,
+-- | This module provides a data type for IDP metadata containing certificate,
 -- SSO URLs etc.
+--
+-- @since 0.4
 module Network.Wai.SAML2.EntityDescriptor (
     IDPSSODescriptor(..),
     Binding(..)
 ) where
 
+--------------------------------------------------------------------------------
 
 import qualified Data.ByteString.Base64 as Base64
 import qualified Data.X509 as X509
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
+
 import Network.Wai.SAML2.XML
+
 import Text.XML.Cursor
 
--- | Datatype describing metadata of an identity provider.
+--------------------------------------------------------------------------------
+
+-- | Describes metadata of an identity provider.
 -- See also section 2.4.3 of [Metadata for the OASIS Security Assertion Markup Language (SAML) V2.0](https://docs.oasis-open.org/security/saml/v2.0/saml-metadata-2.0-os.pdf).
 data IDPSSODescriptor
     = IDPSSODescriptor {
@@ -75,6 +83,8 @@ instance FromXML IDPSSODescriptor where
             $ descriptor $/ element (mdName "SingleSignOnService")
         pure IDPSSODescriptor{..}
 
+-- | `parseService` @cursor@ attempts to parse a pair of a `Binding` value
+-- and a location given as a `Text` value from the XML @cursor@.
 parseService :: MonadFail m => Cursor -> m (Binding, Text)
 parseService cursor = do
     binding <- oneOrFail "Binding is required" (attribute "Binding" cursor)
@@ -82,6 +92,7 @@ parseService cursor = do
     location <- oneOrFail "Location is required" $ attribute "Location" cursor
     pure (binding, location)
 
+-- | `parseBinding` @uri@ attempts to parse a `Binding` value from @uri@.
 parseBinding :: MonadFail m => Text -> m Binding
 parseBinding = \case
     "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" -> pure HTTPArtifact
@@ -91,4 +102,6 @@ parseBinding = \case
     "urn:oasis:names:tc:SAML:2.0:bindings:SOAP" -> pure SOAP
     "urn:oasis:names:tc:SAML:2.0:bindings:URL-Encoding:DEFLATE"
         -> pure URLEncodingDEFLATE
-    other -> fail $ "Unknown Binding: " <> show other
+    other -> fail $ "Unknown Binding: " <> T.unpack other
+
+--------------------------------------------------------------------------------
