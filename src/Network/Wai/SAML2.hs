@@ -33,6 +33,7 @@ module Network.Wai.SAML2 (
 --------------------------------------------------------------------------------
 
 import qualified Data.ByteString as BS
+import Data.Functor ((<&>))
 import Data.Maybe (fromMaybe)
 import qualified Data.Vault.Lazy as V
 
@@ -42,6 +43,7 @@ import Network.Wai.SAML2.Config
 import Network.Wai.SAML2.Validation
 import Network.Wai.SAML2.Assertion
 import Network.Wai.SAML2.Error
+import qualified Network.Wai.SAML2.Response as SAML2
 
 import System.IO.Unsafe (unsafePerformIO)
 
@@ -104,7 +106,7 @@ saml2Callback cfg callback app req sendResponse = do
     let path = rawPathInfo req
 
     -- check if we need to handle this request
-    if | path == saml2AssertionPath cfg && isPOST req -> do
+    if path == saml2AssertionPath cfg && isPOST req then do
             -- default request parse options, but do not allow files;
             -- we are not expecting any
             let bodyOpts = setMaxRequestNumFiles 0
@@ -116,16 +118,23 @@ saml2Callback cfg callback app req sendResponse = do
 
             case lookup "SAMLResponse" body of
                 Just val -> do
-                    result <- validateResponse cfg val
                     let rs = lookup "RelayState" body
+                    result <- validateResponse cfg val <&>
+                                  fmap (\(assertion, response) ->
+                                            Result{
+                                                assertion = assertion,
+                                                relayState = rs,
+                                                response = response
+                                            })
+
                     -- call the callback
-                    callback  (Result rs <$> result) app req sendResponse
+                    callback result app req sendResponse
                 -- the request does not contain the expected payload
                 Nothing -> callback (Left InvalidRequest) app req sendResponse
 
-       -- not one of the paths we need to handle, pass the request on to the
-       -- inner application
-       | otherwise -> app req sendResponse
+    -- not one of the paths we need to handle, pass the request on to the
+    -- inner application
+    else app req sendResponse
 
 --------------------------------------------------------------------------------
 
@@ -208,7 +217,11 @@ data Result = Result {
     -- | An optional relay state, as provided in the POST request.
     relayState :: !(Maybe BS.ByteString),
     -- | The assertion obtained from the response that has been validated.
-    assertion :: !Assertion
+    assertion :: !Assertion,
+    -- | The full response obtained from the IdP.
+    --
+    -- @since 0.4
+    response :: !SAML2.Response
 } deriving (Eq, Show)
 
 --------------------------------------------------------------------------------

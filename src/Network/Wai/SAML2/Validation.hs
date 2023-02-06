@@ -49,13 +49,14 @@ import qualified Text.XML.Cursor as XML
 -- in Base64-encoded @responseData@.
 validateResponse :: SAML2Config
                  -> BS.ByteString
-                 -> IO (Either SAML2Error Assertion)
+                 -> IO (Either SAML2Error (Assertion, Response))
 validateResponse cfg responseData = runExceptT $ do
     -- get the current time
-    now <- liftIO $ getCurrentTime
+    now <- liftIO getCurrentTime
 
     (responseXmlDoc, samlResponse) <- decodeResponse responseData
-    validateSAMLResponse cfg responseXmlDoc samlResponse now
+    assertion <- validateSAMLResponse cfg responseXmlDoc samlResponse now
+    pure (assertion, samlResponse)
 
 -- | 'decodeResponse' @responseData@ decodes a SAML2 response contained
 -- in Base64-encoded @responseData@.

@@ -35,9 +35,15 @@ import Network.Wai.SAML2.Signature
 --------------------------------------------------------------------------------
 
 -- | Represents SAML2 responses.
+
+-- Reference [StatusResponseType]
 data Response = Response {
     -- | The intended destination of this response.
     responseDestination :: !T.Text,
+    -- | The ID of the request this responds corresponds to, if any
+    --
+    -- @since 0.4
+    responseInResponseTo :: !(Maybe T.Text),
     -- | The unique ID of the response.
     responseId :: !T.Text,
     -- | The timestamp when the response was issued.
@@ -57,6 +63,7 @@ data Response = Response {
 } deriving (Eq, Show)
 
 instance FromXML Response where
+    -- Reference [StatusResponseType]
     parseXML cursor = do
         issueInstant <- parseUTCTime
                       $ T.concat
@@ -82,6 +89,7 @@ instance FromXML Response where
         pure Response{
             responseDestination = T.concat $ attribute "Destination" cursor,
             responseId = T.concat $ attribute "ID" cursor,
+            responseInResponseTo = listToMaybe $ attribute "InResponseTo" cursor,
             responseIssueInstant = issueInstant,
             responseVersion = T.concat $ attribute "Version" cursor,
             responseIssuer = T.concat $
@@ -122,3 +130,7 @@ extractSignedInfo cursor = do
     pure signedInfo
 
 --------------------------------------------------------------------------------
+
+-- Reference [StatusResponseType]
+--   Source: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf#page=38
+--   Section: 3.2.2 Complex Type StatusResponseType
