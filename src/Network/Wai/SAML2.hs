@@ -121,10 +121,11 @@ saml2Callback cfg callback app req sendResponse = do
                     let rs = lookup "RelayState" body
                     result <- validateResponse cfg val <&>
                                   fmap (\(assertion, response) ->
-                                          Result
-                                          { assertion = assertion,
-                                            relayState = rs,
-                                            response = response})
+                                            Result{
+                                                assertion = assertion,
+                                                relayState = rs,
+                                                response = response
+                                            })
 
                     -- call the callback
                     callback result app req sendResponse
@@ -217,8 +218,7 @@ data Result = Result {
     relayState :: !(Maybe BS.ByteString),
     -- | The assertion obtained from the response that has been validated.
     assertion :: !Assertion,
-    -- | The ID of the request this result corresponds to to, if any. You
-    -- should check that it matches a request you generated
+    -- | The full response obtained from the IdP.
     --
     -- @since 0.4
     response :: !SAML2.Response

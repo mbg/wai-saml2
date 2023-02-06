@@ -31,7 +31,6 @@ import qualified Data.ByteString.Base64 as BS
 import qualified Data.ByteString.Lazy as LBS
 import Data.Default.Class
 import Data.Time
-import qualified Data.Text as T
 
 import Network.Wai.SAML2.XML.Encrypted
 import Network.Wai.SAML2.Config
