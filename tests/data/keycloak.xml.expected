@@ -6,7 +6,9 @@ Response
   , responseIssueInstant = 2022-08-01 00:32:49.365 UTC
   , responseVersion = "2.0"
   , responseIssuer = "http://localhost:8080/realms/HERP"
-  , responseStatusCode = Success
+  , responseStatusCode =
+      MkStatusCode
+        { statusCodeValue = Success , statusCodeSubordinate = Nothing }
   , responseSignature =
       Signature
         { signatureInfo =

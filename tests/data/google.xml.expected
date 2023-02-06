@@ -9,7 +9,9 @@ Response
   , responseVersion = "2.0"
   , responseIssuer =
       "https://accounts.google.com/o/saml2?idpid=C01aa60hc"
-  , responseStatusCode = Success
+  , responseStatusCode =
+      MkStatusCode
+        { statusCodeValue = Success , statusCodeSubordinate = Nothing }
   , responseSignature =
       Signature
         { signatureInfo =
