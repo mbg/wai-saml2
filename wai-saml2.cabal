@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           wai-saml2
-version:        0.3.0.1
+version:        0.4
 synopsis:       SAML2 assertion validation as WAI middleware
 description:    A Haskell library which implements SAML2 assertion validation as WAI middleware
 category:       Security
