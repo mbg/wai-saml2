@@ -89,9 +89,9 @@ validateSAMLResponse :: SAML2Config
 validateSAMLResponse cfg responseXmlDoc samlResponse now = do
 
     -- check that the response indicates success
-    case responseStatusCode samlResponse of
+    case statusCodeValue $ responseStatusCode samlResponse of
         Success -> pure ()
-        status -> throwError $ Unsuccessful status
+        _status -> throwError $ Unsuccessful $ responseStatusCode samlResponse
 
     -- check that the destination is as expected, if the configuration
     -- expects us to validate this

@@ -6,7 +6,9 @@ Response
   , responseIssueInstant = 2022-07-28 13:53:54.059 UTC
   , responseVersion = "2.0"
   , responseIssuer = "http://www.okta.com/exk1s7jqodj4muVTl697"
-  , responseStatusCode = Success
+  , responseStatusCode =
+      MkStatusCode
+        { statusCodeValue = Success , statusCodeSubordinate = Nothing }
   , responseSignature =
       Signature
         { signatureInfo =
