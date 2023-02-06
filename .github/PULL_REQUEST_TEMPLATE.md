@@ -1,3 +1,7 @@
+**Summary**
+
+<!-- Summarise what changes your PR makes and why. -->
+
 **Checklist**
 
 - [ ] All definitions are documented with Haddock-style comments.
