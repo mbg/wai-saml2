@@ -50,7 +50,7 @@ library:
 
 tests:
   parser:
-    main: Parser.hs
+    main: parser.hs
     source-dirs: tests
     ghc-options: -Wall -Wcompat
     dependencies:

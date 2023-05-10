@@ -86,7 +86,7 @@ library
 
 test-suite parser
   type: exitcode-stdio-1.0
-  main-is: Parser.hs
+  main-is: parser.hs
   other-modules:
       Paths_wai_saml2
   hs-source-dirs:
