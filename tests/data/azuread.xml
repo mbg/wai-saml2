@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="_12f15ff8-3daa-4f34-a16a-381c26ed5293" Version="2.0" IssueInstant="2023-05-09T06:23:21.693Z" Destination="https://v1.beta.ja-sore.de/auth/page/saml2/login" InResponseTo="id8b307ef55396db3b83ac19a7234d6435">
+  <Issuer xmlns="urn:oasis:names:tc:SAML:2.0:assertion">https://sts.windows.net/b0a63ade-3ec7-4d8b-991f-87eb4336274a/</Issuer>
+  <samlp:Status>
+    <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+  </samlp:Status>
+  <Assertion xmlns="urn:oasis:names:tc:SAML:2.0:assertion" ID="_fdba0daa-eae2-4fc5-a138-33cebf4d7700" IssueInstant="2023-05-09T06:23:21.687Z" Version="2.0">
+    <Issuer>https://sts.windows.net/b0a63ade-3ec7-4d8b-991f-87eb4336274a/</Issuer>
+    <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+      <SignedInfo>
+        <CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+        <SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+        <Reference URI="#_fdba0daa-eae2-4fc5-a138-33cebf4d7700">
+          <Transforms>
+            <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+            <Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+          </Transforms>
+          <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+          <DigestValue>OdFOUv9jMt2xQrzm4eUoM6cGT2bKiiPoyzGkUbyrnBo=</DigestValue>
+        </Reference>
+      </SignedInfo>
+      <SignatureValue>NZVV2f8sIhwJ8f+79B5KT1Q4lzHDm2aAU3nXI0eR/eeg1rCSXP//1nIS6HinDjrBEKQweQnegzNgrv+1P2am9XKZiaRSavLkmf7Y/rbWBDm+NEzieFrDM4u6HXNLzWFnz3rxGy0SFKwyHIo9j5LG9xVvCANtPpqalYg4XofndQXw9BmVgVxijw+3Qgq/uye0ymPH3/7wLk1NMxf1/NgI+0q+xh0Zq52odJhlB6BU2qhSN6GdPcbmnK1R9lwBF/FynTCq5S9t16FI0mmX1ro5YRNc+Hyf4lrbbCPcCN38P1URZvm6aTGGHAkq75aftuvM7aGew5AkGvG/6mXphX972Q==</SignatureValue>
+      <KeyInfo>
+        <X509Data>
+          <X509Certificate>MIIC8DCCAdigAwIBAgIQSo7LK8hiRrxKUvrmLSKjvjANBgkqhkiG9w0BAQsFADA0MTIwMAYDVQQDEylNaWNyb3NvZnQgQXp1cmUgRmVkZXJhdGVkIFNTTyBDZXJ0aWZpY2F0ZTAeFw0yMzAyMDcwODEwNDNaFw0yNjAyMDcwODEwNDNaMDQxMjAwBgNVBAMTKU1pY3Jvc29mdCBBenVyZSBGZWRlcmF0ZWQgU1NPIENlcnRpZmljYXRlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxOQn4LvhHMBuKaEfvRF0Uw79ijT/N3EWEvrGa+CoOdcJ/I5+4j9FAk1bJhSBunJcs2E36pio1reUI3c+WY6leA5xbFlFFoy5hzjrWIsugycFYHdhhiHR9mwE/vS0OQDUgPOpQvrQBYWqGO2gqOkWkKwzqzYWVoOSeB+rFHn/afk+4qA1ukwIVzml5/0hOIe7kFdHyCYu6lfxno0uwcObhoCslDzYIGoap9v6mFlcfMksF03jJGyqPjGpXNDhN9LVsOV9G/FYFI9X5xaqMRjSO51DZIb31SA2Me13lQtx6iEuwN20oiJRz0NMtuLAkx2fpZB+It0bBYJ/Q7ElxtgNCQIDAQABMA0GCSqGSIb3DQEBCwUAA4IBAQASR09OVcW+yUYPHr9/EQAf4ChWNh/pGC6OpVi9wU4NvLa4mudDd5n3LDOIq8YGX0TfBEYUbezlQWsviq/GVpN1hDKJVexc/R83LI1UCXHqJ3tQlbbYoaM+gWowVA1MWU4RP3QtJIo2bLKB6KiOS1NQbaOC98UyjOepyxyyRKW0lh8N77i9/ZWmu/9eNT/t39VjYVzPREy1S0leX5KYYSID1XyLUU/hY2uICxRoZASFgZWcAuqa+MMXecdSpbj044za0sUYn/V6r08Org1VcWd3xS0Q4qicsXMWX7w5iOccsA289mstcmEhNfxPo9P5fe1bcwdnrjPNA1v5x4nGkW/q</X509Certificate>
+        </X509Data>
+      </KeyInfo>
+    </Signature>
+    <Subject>
+      <NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress">fumieval@herpdev.onmicrosoft.com</NameID>
+      <SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+        <SubjectConfirmationData InResponseTo="id8b307ef55396db3b83ac19a7234d6435" NotOnOrAfter="2023-05-09T07:23:21.538Z" Recipient="https://v1.beta.ja-sore.de/auth/page/saml2/login"/>
+      </SubjectConfirmation>
+    </Subject>
+    <Conditions NotBefore="2023-05-09T06:18:21.538Z" NotOnOrAfter="2023-05-09T07:23:21.538Z">
+      <AudienceRestriction>
+        <Audience>https://v1.beta.ja-sore.de/</Audience>
+      </AudienceRestriction>
+    </Conditions>
+    <AttributeStatement>
+      <Attribute Name="http://schemas.microsoft.com/identity/claims/tenantid">
+        <AttributeValue>b0a63ade-3ec7-4d8b-991f-87eb4336274a</AttributeValue>
+      </Attribute>
+      <Attribute Name="http://schemas.microsoft.com/identity/claims/objectidentifier">
+        <AttributeValue>552200d7-3516-4d81-8ea1-a87b429f07ef</AttributeValue>
+      </Attribute>
+      <Attribute Name="http://schemas.microsoft.com/identity/claims/displayname">
+        <AttributeValue>fumieval</AttributeValue>
+      </Attribute>
+      <Attribute Name="http://schemas.microsoft.com/identity/claims/identityprovider">
+        <AttributeValue>https://sts.windows.net/b0a63ade-3ec7-4d8b-991f-87eb4336274a/</AttributeValue>
+      </Attribute>
+      <Attribute Name="http://schemas.microsoft.com/claims/authnmethodsreferences">
+        <AttributeValue>http://schemas.microsoft.com/ws/2008/06/identity/authenticationmethod/password</AttributeValue>
+      </Attribute>
+      <Attribute Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name">
+        <AttributeValue>fumieval@herpdev.onmicrosoft.com</AttributeValue>
+      </Attribute>
+    </AttributeStatement>
+    <AuthnStatement AuthnInstant="2023-05-09T06:21:17.599Z" SessionIndex="_fdba0daa-eae2-4fc5-a138-33cebf4d7700">
+      <AuthnContext>
+        <AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</AuthnContextClassRef>
+      </AuthnContext>
+    </AuthnStatement>
+  </Assertion>
+</samlp:Response>

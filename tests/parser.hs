@@ -23,6 +23,7 @@ main = defaultMain $ testGroup "Parse SAML2 response"
     [ mkGolden @Response $ prefix </> "keycloak.xml"
     , mkGolden @Response $ prefix </> "okta.xml"
     , mkGolden @Response $ prefix </> "google.xml"
+    , mkGolden @Response $ prefix </> "azuread.xml"
     , mkGolden @IDPSSODescriptor $ prefix </> "metadata/keycloak.xml"
     , mkGolden @IDPSSODescriptor $ prefix </> "metadata/google.xml"
     ]

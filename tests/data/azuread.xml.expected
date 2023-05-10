@@ -1,0 +1,123 @@
+Response
+  { responseDestination =
+      "https://v1.beta.ja-sore.de/auth/page/saml2/login"
+  , responseInResponseTo = Just "id8b307ef55396db3b83ac19a7234d6435"
+  , responseId = "_12f15ff8-3daa-4f34-a16a-381c26ed5293"
+  , responseIssueInstant = 2023-05-09 06:23:21.693 UTC
+  , responseVersion = "2.0"
+  , responseIssuer =
+      "https://sts.windows.net/b0a63ade-3ec7-4d8b-991f-87eb4336274a/"
+  , responseStatusCode =
+      MkStatusCode
+        { statusCodeValue = Success , statusCodeSubordinate = Nothing }
+  , responseSignature = Nothing
+  , responseAssertion =
+      Just
+        Assertion
+          { assertionId = "_fdba0daa-eae2-4fc5-a138-33cebf4d7700"
+          , assertionIssued = 2023-05-09 06:23:21.687 UTC
+          , assertionIssuer =
+              "https://sts.windows.net/b0a63ade-3ec7-4d8b-991f-87eb4336274a/"
+          , assertionSubject =
+              Subject
+                { subjectConfirmations =
+                    [ SubjectConfirmation
+                        { subjectConfirmationMethod = Bearer
+                        , subjectConfirmationAddress = ""
+                        , subjectConfirmationNotOnOrAfter = 2023-05-09 07:23:21.538 UTC
+                        , subjectConfirmationRecipient =
+                            "https://v1.beta.ja-sore.de/auth/page/saml2/login"
+                        }
+                    ]
+                , subjectNameID =
+                    NameID
+                      { nameIDQualifier = Nothing
+                      , nameIDSPNameQualifier = Nothing
+                      , nameIDSPProvidedID = Nothing
+                      , nameIDFormat = Just EmailAddress
+                      , nameIDValue = "fumieval@herpdev.onmicrosoft.com"
+                      }
+                }
+          , assertionConditions =
+              Conditions
+                { conditionsNotBefore = 2023-05-09 06:18:21.538 UTC
+                , conditionsNotOnOrAfter = 2023-05-09 07:23:21.538 UTC
+                , conditionsAudienceRestrictions =
+                    [ AudienceRestriction
+                        { audienceRestrictionAudience = [ "https://v1.beta.ja-sore.de/" ] }
+                    ]
+                }
+          , assertionAuthnStatement =
+              AuthnStatement
+                { authnStatementInstant = 2023-05-09 06:21:17.599 UTC
+                , authnStatementSessionIndex =
+                    "_fdba0daa-eae2-4fc5-a138-33cebf4d7700"
+                , authnStatementLocality = ""
+                }
+          , assertionAttributeStatement =
+              [ AssertionAttribute
+                  { attributeName =
+                      "http://schemas.microsoft.com/identity/claims/tenantid"
+                  , attributeFriendlyName = Nothing
+                  , attributeNameFormat = ""
+                  , attributeValue = "b0a63ade-3ec7-4d8b-991f-87eb4336274a"
+                  }
+              , AssertionAttribute
+                  { attributeName =
+                      "http://schemas.microsoft.com/identity/claims/objectidentifier"
+                  , attributeFriendlyName = Nothing
+                  , attributeNameFormat = ""
+                  , attributeValue = "552200d7-3516-4d81-8ea1-a87b429f07ef"
+                  }
+              , AssertionAttribute
+                  { attributeName =
+                      "http://schemas.microsoft.com/identity/claims/displayname"
+                  , attributeFriendlyName = Nothing
+                  , attributeNameFormat = ""
+                  , attributeValue = "fumieval"
+                  }
+              , AssertionAttribute
+                  { attributeName =
+                      "http://schemas.microsoft.com/identity/claims/identityprovider"
+                  , attributeFriendlyName = Nothing
+                  , attributeNameFormat = ""
+                  , attributeValue =
+                      "https://sts.windows.net/b0a63ade-3ec7-4d8b-991f-87eb4336274a/"
+                  }
+              , AssertionAttribute
+                  { attributeName =
+                      "http://schemas.microsoft.com/claims/authnmethodsreferences"
+                  , attributeFriendlyName = Nothing
+                  , attributeNameFormat = ""
+                  , attributeValue =
+                      "http://schemas.microsoft.com/ws/2008/06/identity/authenticationmethod/password"
+                  }
+              , AssertionAttribute
+                  { attributeName =
+                      "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+                  , attributeFriendlyName = Nothing
+                  , attributeNameFormat = ""
+                  , attributeValue = "fumieval@herpdev.onmicrosoft.com"
+                  }
+              ]
+          , assertionSignature =
+              Just
+                Signature
+                  { signatureInfo =
+                      SignedInfo
+                        { signedInfoCanonicalisationMethod = C14N_EXC_1_0
+                        , signedInfoSignatureMethod = RSA_SHA256
+                        , signedInfoReference =
+                            Reference
+                              { referenceURI = "_fdba0daa-eae2-4fc5-a138-33cebf4d7700"
+                              , referenceDigestMethod = DigestSHA256
+                              , referenceDigestValue =
+                                  "OdFOUv9jMt2xQrzm4eUoM6cGT2bKiiPoyzGkUbyrnBo="
+                              }
+                        }
+                  , signatureValue =
+                      "NZVV2f8sIhwJ8f+79B5KT1Q4lzHDm2aAU3nXI0eR/eeg1rCSXP//1nIS6HinDjrBEKQweQnegzNgrv+1P2am9XKZiaRSavLkmf7Y/rbWBDm+NEzieFrDM4u6HXNLzWFnz3rxGy0SFKwyHIo9j5LG9xVvCANtPpqalYg4XofndQXw9BmVgVxijw+3Qgq/uye0ymPH3/7wLk1NMxf1/NgI+0q+xh0Zq52odJhlB6BU2qhSN6GdPcbmnK1R9lwBF/FynTCq5S9t16FI0mmX1ro5YRNc+Hyf4lrbbCPcCN38P1URZvm6aTGGHAkq75aftuvM7aGew5AkGvG/6mXphX972Q=="
+                  }
+          }
+  , responseEncryptedAssertion = Nothing
+  }

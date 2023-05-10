@@ -20,6 +20,8 @@ build-type:     Simple
 extra-source-files:
     README.md
     CHANGELOG.md
+    tests/data/azuread.xml
+    tests/data/azuread.xml.expected
     tests/data/google.xml
     tests/data/google.xml.expected
     tests/data/keycloak.xml
