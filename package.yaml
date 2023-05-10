@@ -62,3 +62,17 @@ tests:
       - tasty-golden
       - wai-saml2
       - xml-conduit
+  validation:
+    main: validation.hs
+    source-dirs: tests
+    ghc-options: -Wall -Wcompat
+    dependencies:
+      - base
+      - bytestring
+      - filepath
+      - pretty-show
+      - tasty
+      - tasty-hunit
+      - transformers
+      - wai-saml2
+      - xml-conduit

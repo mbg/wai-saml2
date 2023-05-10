@@ -1,5 +1,7 @@
 # Changelog for `wai-saml2`
 
+-   Added `validation` test ([#52](https://github.com/mbg/wai-saml2/pull/52) by [@fumieval](https://github.com/fumieval))
+
 ## 0.4
 
 -   Split `validateResponse` into `decodeResponse` and `validateSAMLResponse` ([#31](https://github.com/mbg/wai-saml2/pull/31) by [@fumieval](https://github.com/fumieval))
