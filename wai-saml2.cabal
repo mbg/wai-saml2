@@ -26,6 +26,10 @@ extra-source-files:
     tests/data/keycloak.xml.expected
     tests/data/okta.xml
     tests/data/okta.xml.expected
+    tests/data/metadata/google.xml
+    tests/data/metadata/google.xml.expected
+    tests/data/metadata/keycloak.xml
+    tests/data/metadata/keycloak.xml.expected
 
 source-repository head
   type: git
