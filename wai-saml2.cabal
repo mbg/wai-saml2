@@ -123,3 +123,45 @@ test-suite parser
     , xml-conduit
     , zlib >=0.6.0.0 && <0.7
   default-language: Haskell2010
+
+test-suite validate
+  type: exitcode-stdio-1.0
+  main-is: validate.hs
+  other-modules:
+      Paths_wai_saml2
+  hs-source-dirs:
+      tests
+  default-extensions:
+      FlexibleInstances
+      OverloadedStrings
+      RecordWildCards
+  ghc-options: -Wall -Wcompat
+  build-depends:
+      base
+    , base16-bytestring >=0.1 && <1.1
+    , base64-bytestring >=0.1 && <2
+    , bytestring
+    , c14n >=0.1.0.1 && <1
+    , containers ==0.6.*
+    , cryptonite <1
+    , data-default-class <1
+    , filepath
+    , http-types <1
+    , mtl >=2.2.1 && <3
+    , network-uri >=2.0 && <3
+    , pretty-show
+    , tasty
+    , tasty-golden
+    , text <2.1
+    , time >=1.9 && <2
+    , vault >=0.3 && <1
+    , wai >=3.0 && <4
+    , wai-extra >=3.0 && <4
+    , wai-saml2
+    , x509 <2
+    , x509-store <2
+    , xml-conduit
+    , zlib >=0.6.0.0 && <0.7
+    , rio
+    , transformers
+  default-language: Haskell2010

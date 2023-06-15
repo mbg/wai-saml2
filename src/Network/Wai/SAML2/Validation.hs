@@ -43,6 +43,8 @@ import Network.Wai.SAML2.Assertion
 import qualified Text.XML as XML
 import qualified Text.XML.Cursor as XML
 
+import Debug.Trace
+
 --------------------------------------------------------------------------------
 
 -- | 'validateResponse' @cfg responseData@ validates a SAML2 response contained
@@ -179,6 +181,9 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
                       $ signedInfoReference
                       $ signatureInfo
                       $ responseSignature samlResponse
+
+    traceM $ "DOCUMENT DIGEST: " <> show documentHash
+    traceM $ "SIGNED DIGEST:   " <> maybe "" show referenceHash
 
     if Just documentHash /= referenceHash
     then throwError InvalidDigest
