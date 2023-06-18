@@ -5,13 +5,6 @@
 
 packages:
 - completed:
-    hackage: c14n-0.1.0.1@sha256:c56a513c1363d126ee704656b59d2e2af1cfe878587a97cb69ab0122b82e2d4d,1371
-    pantry-tree:
-      sha256: 67187305166a25d10cb133378ae89c3d76d51ee756edd757a84f71f176eb61e7
-      size: 285
-  original:
-    hackage: c14n-0.1.0.1@sha256:c56a513c1363d126ee704656b59d2e2af1cfe878587a97cb69ab0122b82e2d4d,1371
-- completed:
     hackage: crypton-0.31@sha256:c0e4aa081bd65d1cb415358ec43e83e7fe703c83b633243a89162bd6eb865850,18286
     pantry-tree:
       sha256: 0d73be1794796e4c87e1a20198109ec7364eee8c54dd6cf6c4d202f1f6ca3ac0
@@ -34,7 +27,7 @@ packages:
     hackage: crypton-x509-store-1.6.9
 snapshots:
 - completed:
-    sha256: 3740f22286bf5e6e3d82f88125e1c708b6e27847211f956b530aa5d83cf39383
-    size: 567677
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/17/14.yaml
-  original: lts-17.14
+    sha256: 428ec8d5ce932190d3cbe266b9eb3c175cd81e984babf876b64019e2cbe4ea68
+    size: 590100
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/28.yaml
+  original: lts-18.28

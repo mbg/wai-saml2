@@ -1,5 +1,9 @@
 # Changelog for `wai-saml2`
 
+## Unreleased
+
+-   Switch from `x509-*` to `crypton-x509-*`.
+
 ## 0.4
 
 -   Split `validateResponse` into `decodeResponse` and `validateSAMLResponse` ([#31](https://github.com/mbg/wai-saml2/pull/31) by [@fumieval](https://github.com/fumieval))
