@@ -3,10 +3,31 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: crypton-0.31@sha256:c0e4aa081bd65d1cb415358ec43e83e7fe703c83b633243a89162bd6eb865850,18286
+    pantry-tree:
+      sha256: 0d73be1794796e4c87e1a20198109ec7364eee8c54dd6cf6c4d202f1f6ca3ac0
+      size: 23320
+  original:
+    hackage: crypton-0.31@sha256:c0e4aa081bd65d1cb415358ec43e83e7fe703c83b633243a89162bd6eb865850,18286
+- completed:
+    hackage: crypton-x509-1.7.6@sha256:c567657a705b6d6521f9dd2de999bf530d618ec00f3b939df76a41fb0fe94281,2339
+    pantry-tree:
+      sha256: 729e7db8dfc0a8b43e08bbd8d1387c9065e39beda6ac39e0fb9f10140810a3eb
+      size: 1080
+  original:
+    hackage: crypton-x509-1.7.6
+- completed:
+    hackage: crypton-x509-store-1.6.9@sha256:422b9b9f87a7382c66385d047615b16fc86a68c08ea22b1e0117c143a2d44050,1750
+    pantry-tree:
+      sha256: 87654d130a7f987ee139c821a1be45736d18df9fa4cb1142c4e054d3802338f3
+      size: 406
+  original:
+    hackage: crypton-x509-store-1.6.9
 snapshots:
 - completed:
-    sha256: fc39d8afc97531d53d87b10abdef593bce503c0c1e46c2e9a84ebcbc78bf8470
-    size: 648432
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/2.yaml
-  original: lts-20.2
+    sha256: e63b43d506918278d05cd1448bd19352ab2faa9b8e9d64ce527b56f1a7fba149
+    size: 650255
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/20/25.yaml
+  original: lts-20.25

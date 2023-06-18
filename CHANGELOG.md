@@ -2,6 +2,8 @@
 
 ## Unreleased changes
 
+-   Switch from `x509-*` to `crypton-x509-*`.
+
 ## 0.5
 
 -   Support GHC 9.6 ([#53](https://github.com/mbg/wai-saml2/pull/53) by [@mbg](https://github.com/mbg))
