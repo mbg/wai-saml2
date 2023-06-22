@@ -31,6 +31,7 @@ import Data.Time
 import Text.XML.Cursor
 
 import Network.Wai.SAML2.NameIDFormat
+import Network.Wai.SAML2.Signature
 import Network.Wai.SAML2.XML
 
 --------------------------------------------------------------------------------
@@ -273,7 +274,9 @@ data Assertion = Assertion {
     -- | The authentication statement included in the assertion.
     assertionAuthnStatement :: !AuthnStatement,
     -- | The assertion's attribute statement.
-    assertionAttributeStatement :: !AttributeStatement
+    assertionAttributeStatement :: !AttributeStatement,
+    -- | The assertion's signature.
+    assertionSignature :: !(Maybe Signature)
 } deriving (Eq, Show)
 
 -- Reference [Assertion]
@@ -301,7 +304,9 @@ instance FromXML Assertion where
             assertionAuthnStatement = authnStatement,
             assertionAttributeStatement =
                 cursor $/ element (saml2Name "AttributeStatement")
-                    >=> parseAttributeStatement
+                    >=> parseAttributeStatement,
+            assertionSignature = listToMaybe $
+                cursor $/ element (dsName "Signature") >=> parseXML
         }
 
 --------------------------------------------------------------------------------

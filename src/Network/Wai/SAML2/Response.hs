@@ -55,7 +55,7 @@ data Response = Response {
     -- | The status of the response.
     responseStatusCode :: !StatusCode,
     -- | The response signature.
-    responseSignature :: !Signature,
+    responseSignature :: !(Maybe Signature),
     -- | The unencrypted assertion.
     --
     -- @since 0.4
@@ -87,9 +87,6 @@ instance FromXML Response where
                     $/  element (saml2Name "EncryptedAssertion")
                     ) >>= parseXML
 
-        signature <- oneOrFail "Signature is required" (
-            cursor $/ element (dsName "Signature") ) >>= parseXML
-
         pure Response{
             responseDestination = T.concat $ attribute "Destination" cursor,
             responseId = T.concat $ attribute "ID" cursor,
@@ -99,7 +96,8 @@ instance FromXML Response where
             responseIssuer = T.concat $
                 cursor $/ element (saml2Name "Issuer") &/ content,
             responseStatusCode = statusCode,
-            responseSignature = signature,
+            responseSignature = listToMaybe $
+                (cursor $/ element (dsName "Signature")) >>= parseXML,
             responseAssertion = assertion,
             responseEncryptedAssertion = encAssertion
         }

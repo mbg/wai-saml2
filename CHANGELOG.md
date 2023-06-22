@@ -1,6 +1,9 @@
 # Changelog for `wai-saml2`
+## Unreleased
 
 -   Added `validation` test ([#52](https://github.com/mbg/wai-saml2/pull/52) by [@fumieval](https://github.com/fumieval))
+-   Support signed assertions, not just signed responses ([#45](https://github.com/mbg/wai-saml2/pull/45) by [@fumieval](https://github.com/fumieval))
+
 
 ## 0.4
 

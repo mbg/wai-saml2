@@ -81,6 +81,14 @@ decodeResponse responseData = do
         Left err -> throwError $ InvalidResponse err
         Right samlResponse -> pure (responseXmlDoc, samlResponse)
 
+-- | Get a signature from either the given response or the assertion.
+getSignature :: Response -> ExceptT SAML2Error IO Signature
+getSignature Response{..} = case responseSignature of
+    Nothing -> case assertionSignature <$> responseAssertion of
+        Just (Just a) -> pure a
+        _ -> throwError $ InvalidResponse $ userError "Signature is required"
+    Just a -> pure a
+
 -- | 'validateSAMLResponse' @cfg doc response timestamp@ validates a decoded SAML2
 -- response using the given @timestamp@.
 --
@@ -116,13 +124,19 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
             | issuer /= expectedIssuer -> throwError $ InvalidIssuer issuer
         _ -> pure ()
 
+    -- Obtain the XML node of the assertion for validation
+    assertionXml <- oneOrFail "Assertion is required" $
+        XML.fromDocument responseXmlDoc XML.$/ XML.element (saml2Name "Assertion")
+
     --  ***CORE VALIDATION***
     -- See https://www.w3.org/TR/xmldsig-core1/#sec-CoreValidation
     --
     --  *REFERENCE VALIDATION*
     -- 1. We extract the SignedInfo element from the SAML2 response's
     -- Signature element. This element contains
-    signedInfo <- extractSignedInfo (XML.fromDocument responseXmlDoc)
+    signedInfo <- case responseSignature samlResponse of
+        Just _ -> extractSignedInfo (XML.fromDocument responseXmlDoc)
+        Nothing -> extractSignedInfo assertionXml
 
     -- construct a new XML document from the SignedInfo element and render
     -- it into a textual representation
@@ -137,27 +151,40 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
         Left err -> throwError $ CanonicalisationFailure err
         Right result -> pure result
 
+    signature <- getSignature samlResponse
+
     -- 2. At this point we should dereference all elements identified by
     -- Reference elements inside the SignedInfo element. However, we do
     -- not currently do that and instead just assume that there is only
     -- one Reference element which targets the overall Response.
     -- We sanity check this, just in case we are wrong since we do not
     -- want an attacker to be able to exploit this.
-    let documentId = responseId samlResponse
+    documentId <- case responseSignature samlResponse of
+        Just _ -> pure $ responseId samlResponse
+        Nothing -> case responseAssertion samlResponse of
+            Just a -> pure $ assertionId a
+            Nothing -> throwError $ InvalidResponse $ userError "Assertion is missing"
     let referenceId = referenceURI
                     $ signedInfoReference
-                    $ signatureInfo
-                    $ responseSignature samlResponse
+                    $ signatureInfo signature
 
     if documentId /= referenceId
     then throwError $ UnexpectedReference referenceId
     else pure ()
 
     -- Now that we have sanity checked that we should indeed validate
-    -- the entire Response, we need to remove the Signature element
+    -- the entire Response or the Assertion, we need to remove the Signature element
     -- from it (since the Response cannot possibly have been hashed with
     -- the Signature element present). First remove the Signature element:
-    let docMinusSignature = removeSignature responseXmlDoc
+    docMinusSignature <- removeSignature <$> case responseSignature samlResponse of
+        Just _ -> pure responseXmlDoc
+        -- if a response signature is not present, assume that the assertion contains the signature
+        Nothing | XML.NodeElement node <- XML.node assertionXml -> pure XML.Document
+            { documentPrologue = XML.Prologue [] Nothing []
+            , documentRoot = node
+            , documentEpilogue = []
+            }
+        _ -> throwError $ InvalidResponse $ userError "Assertion is required"
 
     -- then render the resulting document and canonicalise it
     let renderedXml = XML.renderLBS def docMinusSignature
@@ -177,8 +204,7 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
                       $ BS.decodeLenient
                       $ referenceDigestValue
                       $ signedInfoReference
-                      $ signatureInfo
-                      $ responseSignature samlResponse
+                      $ signatureInfo signature
 
     if Just documentHash /= referenceHash
     then throwError InvalidDigest
@@ -188,7 +214,7 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
     -- We need to check that the SignedInfo element has not been tampered
     -- with, which we do by checking the signature contained in the response;
     -- first: extract the signature data from the response
-    let sig = BS.decodeLenient $ signatureValue $ responseSignature samlResponse
+    let sig = BS.decodeLenient $ signatureValue signature
 
     -- using the IdP's public key and the canonicalised SignedInfo element,
     -- check that the signature is correct
