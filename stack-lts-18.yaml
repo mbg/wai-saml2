@@ -1,1 +1,6 @@
 resolver: lts-18.28
+
+extra-deps:
+  - crypton-0.31@sha256:c0e4aa081bd65d1cb415358ec43e83e7fe703c83b633243a89162bd6eb865850,18286
+  - crypton-x509-1.7.6
+  - crypton-x509-store-1.6.9
