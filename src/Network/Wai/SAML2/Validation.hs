@@ -16,7 +16,9 @@ module Network.Wai.SAML2.Validation (
 --------------------------------------------------------------------------------
 
 import Control.Exception
+import Control.Monad (forM_, when, unless)
 import Control.Monad.Except
+import Control.Monad.IO.Class (liftIO)
 
 import Crypto.Error
 import Crypto.Hash
