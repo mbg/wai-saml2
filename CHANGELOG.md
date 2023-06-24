@@ -1,5 +1,9 @@
 # Changelog for `wai-saml2`
 
+## Unreleased changes
+
+-   Support GHC 9.6 ([#53](https://github.com/mbg/wai-saml2/pull/53) by [@mbg](https://github.com/mbg))
+
 ## 0.4
 
 -   Split `validateResponse` into `decodeResponse` and `validateSAMLResponse` ([#31](https://github.com/mbg/wai-saml2/pull/31) by [@fumieval](https://github.com/fumieval))
