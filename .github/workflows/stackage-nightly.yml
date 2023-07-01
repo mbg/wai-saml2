@@ -23,7 +23,19 @@ jobs:
           enable-stack: true
           stack-version: "latest"
 
-      - name: Build with the nightly snapshot
+      - name: Initialise stack.yaml with the nightly snapshot
         run: |
           rm -f stack.yaml && stack init --resolver nightly
+
+      - name: Cache .stack
+        id: cache-stack
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.install-haskell.outputs.stack-root }}
+          key: ${{ runner.os }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('wai-saml2.cabal') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ hashFiles('stack.yaml') }}-
+
+      - name: Build with the nightly snapshot
+        run: |
           stack build --resolver nightly --haddock --test --bench --no-run-benchmarks
