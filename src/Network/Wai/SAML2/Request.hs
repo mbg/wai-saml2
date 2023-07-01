@@ -63,6 +63,11 @@ data AuthnRequest
     ,   authnRequestID :: !T.Text
         -- | SP Entity ID
     ,   authnRequestIssuer :: !T.Text
+        -- | The URI reference to which this request is to be sent. Required
+        -- for signed requests
+        --
+        -- @since 0.4.1
+    ,   authnRequestDestination :: !(Maybe T.Text)
         -- | Allow IdP to generate a new identifier
     ,   authnRequestAllowCreate :: !Bool
         -- | The URI reference corresponding to a name identifier format
@@ -83,6 +88,7 @@ issueAuthnRequest authnRequestIssuer = do
     pure AuthnRequest{
         authnRequestAllowCreate = True
     ,   authnRequestNameIDFormat = Transient
+    ,   authnRequestDestination = Nothing
     ,   ..
     }
 
@@ -118,13 +124,15 @@ renderXML AuthnRequest{..} =
         root = Element
             (saml2pName "AuthnRequest")
             (Map.fromList
-                [ ("xmlns:samlp", "urn:oasis:names:tc:SAML:2.0:protocol")
+               ([ ("xmlns:samlp", "urn:oasis:names:tc:SAML:2.0:protocol")
                 , ("xmlns:saml", "urn:oasis:names:tc:SAML:2.0:assertion")
                 , ("ID", authnRequestID) -- Reference [RequestAbstractType] and see [ID Values]
                 , ("Version", "2.0")  -- [RequestAbstractType]
                 , ("IssueInstant", timestamp) -- [RequestAbstractType]
                 , ("AssertionConsumerServiceIndex", "1") -- [AuthnRequest]
-                ])
+                ]
+                -- [RequestAbstractType]
+                ++ [("Destination", uri) | let Just uri = authnRequestDestination] ))
             [NodeElement issuer, NodeElement nameIdPolicy]
         -- Reference [RequestAbstractType]
         issuer = Element
