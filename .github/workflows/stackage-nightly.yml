@@ -1,4 +1,4 @@
-name: stackage-nightly
+name: "Stackage Nightly"
 
 on:
   schedule:
