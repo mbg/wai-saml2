@@ -1,8 +1,10 @@
 # Changelog for `wai-saml2`
 
-## 0.4.1
+## Unreleased changes
 
-- Added `authnRequestDestination` field to `AuthnRequest`
+-   Support GHC 9.6 ([#53](https://github.com/mbg/wai-saml2/pull/53) by [@mbg](https://github.com/mbg))
+-   Fixed a bug in XML canonicalisation causing a digest mismatch on Okta when assertion attributes are present (special thanks to @hiroqn) ([#51](https://github.com/mbg/wai-saml2/pull/51) by [@fumieval](https://github.com/fumieval))
+-   Added `authnRequestDestination` field to `AuthnRequest` ([#47](https://github.com/mbg/wai-saml2/pull/47) by [@Philonous](https://github.com/Philonous))
 
 ## 0.4
 

@@ -13,6 +13,7 @@ module Network.Wai.SAML2.XML (
     xencName,
     dsName,
     mdName,
+    ecName,
 
     -- * Utility functions
     toMaybeText,
@@ -21,7 +22,8 @@ module Network.Wai.SAML2.XML (
 
     -- * XML parsing
     FromXML(..),
-    oneOrFail
+    oneOrFail,
+    parseSettings
 ) where
 
 --------------------------------------------------------------------------------
@@ -66,6 +68,12 @@ mdName name =
     Name name (Just "urn:oasis:names:tc:SAML:2.0:metadata") (Just "md")
 
 
+-- | 'ecName' @name@ constructs a 'Name' for @name@ in the
+-- http://www.w3.org/2001/10/xml-exc-c14n# namespace.
+ecName :: T.Text -> Name
+ecName name =
+    Name name (Just "http://www.w3.org/2001/10/xml-exc-c14n#") (Just "ec")
+
 -- | 'toMaybeText' @xs@ returns 'Nothing' if @xs@ is the empty list, or
 -- the result of concatenating @xs@ wrapped in 'Just' otherwise.
 toMaybeText :: [T.Text] -> Maybe T.Text
@@ -100,3 +108,8 @@ oneOrFail err [] = fail err
 oneOrFail _ (x:_) = pure x
 
 --------------------------------------------------------------------------------
+
+-- | It is important to retain namespaces in order to calculate the hash of the canonicalised XML correctly.
+-- see: https://stackoverflow.com/questions/69252831/saml-2-0-digest-value-calculation-in-saml-assertion
+parseSettings :: ParseSettings
+parseSettings = def { psRetainNamespaces = True }
