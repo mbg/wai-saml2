@@ -5,15 +5,15 @@
 
 packages:
 - completed:
-    hackage: c14n-0.1.0.1@sha256:c56a513c1363d126ee704656b59d2e2af1cfe878587a97cb69ab0122b82e2d4d,1371
+    hackage: c14n-0.1.0.3@sha256:71d230741cbe6023e3b3ef43c4acf79d18cc3631d956b2261e4a170302baaebc,1163
     pantry-tree:
+      sha256: 86277e6f592859bb078ebac3fa6d71880f0079858c1f1ca64c38885586e1b4f8
       size: 285
-      sha256: 67187305166a25d10cb133378ae89c3d76d51ee756edd757a84f71f176eb61e7
   original:
-    hackage: c14n-0.1.0.1@sha256:c56a513c1363d126ee704656b59d2e2af1cfe878587a97cb69ab0122b82e2d4d,1371
+    hackage: c14n-0.1.0.3
 snapshots:
 - completed:
+    sha256: 3740f22286bf5e6e3d82f88125e1c708b6e27847211f956b530aa5d83cf39383
     size: 567677
     url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/17/14.yaml
-    sha256: 3740f22286bf5e6e3d82f88125e1c708b6e27847211f956b530aa5d83cf39383
   original: lts-17.14
