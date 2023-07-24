@@ -45,6 +45,8 @@ import Network.Wai.SAML2.Assertion
 import qualified Text.XML as XML
 import qualified Text.XML.Cursor as XML
 
+import Debug.Trace
+
 --------------------------------------------------------------------------------
 
 -- | 'validateResponse' @cfg responseData@ validates a SAML2 response contained
@@ -93,7 +95,6 @@ validateSAMLResponse :: SAML2Config
                      -> UTCTime
                      -> ExceptT SAML2Error IO Assertion
 validateSAMLResponse cfg responseXmlDoc samlResponse now = do
-
     -- check that the response indicates success
     case statusCodeValue $ responseStatusCode samlResponse of
         Success -> pure ()
@@ -182,7 +183,7 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
                       $ signedInfoReference
                       $ signatureInfo
                       $ responseSignature samlResponse
-
+    traceShowM (documentHash, referenceHash, Just documentHash == referenceHash)
     if Just documentHash /= referenceHash
     then throwError InvalidDigest
     else pure ()

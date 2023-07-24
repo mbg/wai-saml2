@@ -116,8 +116,9 @@ isNotSignature _ = True
 -- @document@ and returns the resulting document.
 removeSignature :: Document -> Document
 removeSignature (Document prologue root misc) =
-    let Element n attr ns = root
-    in Document prologue (Element n attr (filter isNotSignature ns)) misc
+    Document prologue (go root) misc
+    where
+        go (Element n attr ns) = Element n attr (filter isNotSignature ns)
 
 -- | Returns all nodes at @cursor@.
 nodes :: MonadFail m => Cursor -> m Node

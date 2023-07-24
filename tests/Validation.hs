@@ -50,4 +50,6 @@ tests = testGroup "Validate SAML2 Response"
         $ run "azuread.crt" "2023-05-09T16:00:00Z" "azuread-signed-assertion.xml"
     , testCase "Okta with AttributeStatement"
         $ run "okta.crt" "2023-06-16T06:43:00.000Z" "okta-attributes.xml"
+    , testCase "TrustLogin"
+        $ run "trustlogin.crt" "2023-07-21T08:30:00.000Z" "trustlogin.xml"
     ]
