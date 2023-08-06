@@ -30,7 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: mbg/actions/stack/build@main
+      - uses: mbg/actions/stack/build@v0.1
         with:
           resolver: ${{ matrix.resolver }}
           upload-docs: true

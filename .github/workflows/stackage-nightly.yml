@@ -16,4 +16,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: mbg/actions/stack/nightly@main
+      - uses: mbg/actions/stack/nightly@v0.1
