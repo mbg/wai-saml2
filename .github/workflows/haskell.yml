@@ -30,37 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: haskell/actions/setup@v2
-        id: install-haskell
+      - uses: mbg/actions/stack/build@v0.1
         with:
-          stack-no-global: true
-          enable-stack: true
-          stack-version: "latest"
-
-      - name: Cache .stack
-        id: cache-stack
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.install-haskell.outputs.stack-root }}
-          key: ${{ runner.os }}-${{ matrix.resolver }}-${{ hashFiles(format('{0}.yaml', matrix.resolver)) }}-${{ hashFiles('wai-saml2.cabal') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.resolver }}-${{ hashFiles(format('{0}.yaml', matrix.resolver)) }}-
-            ${{ runner.os }}-${{ matrix.resolver }}-
-
-      - name: Install dependencies
-        run: stack --stack-yaml=${{ matrix.resolver }}.yaml --no-terminal build --test --haddock --only-dependencies --fast
-
-      - name: Build
-        run: |
-          stack --stack-yaml=${{ matrix.resolver }}.yaml --no-terminal build --fast \
-            --test --no-run-tests \
-            --haddock --haddock-arguments='-odocs'
-
-      - name: Upload documentation
-        uses: actions/upload-artifact@v3
-        with:
-          name: docs-${{ matrix.resolver }}
-          path: docs/
-
-      - name: Test
-        run: stack --stack-yaml=${{ matrix.resolver }}.yaml --no-terminal test --fast
+          resolver: ${{ matrix.resolver }}
+          upload-docs: true
