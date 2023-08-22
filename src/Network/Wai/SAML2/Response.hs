@@ -135,6 +135,8 @@ extractSignedInfo cursor = do
     pure signedInfo
 
 -- | Obtain a list of InclusiveNamespaces entries used for exclusive XML canonicalisation.
+--
+-- @since 0.5
 extractPrefixList :: Cursor -> [T.Text]
 extractPrefixList cursor = concatMap T.words
     $ concatMap (attribute "PrefixList")

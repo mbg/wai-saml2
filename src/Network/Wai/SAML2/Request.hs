@@ -66,7 +66,7 @@ data AuthnRequest
         -- | The URI reference to which this request is to be sent. Required
         -- for signed requests
         --
-        -- @since 0.4.1
+        -- @since 0.5
     ,   authnRequestDestination :: !(Maybe T.Text)
         -- | Allow IdP to generate a new identifier
     ,   authnRequestAllowCreate :: !Bool
