@@ -1,6 +1,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE TypeApplications #-}
+
+module Parser where
+
 import Network.Wai.SAML2.EntityDescriptor
 import Network.Wai.SAML2.Response
 import Network.Wai.SAML2.XML
@@ -18,8 +21,8 @@ run src = do
     resp <- parseXML (fromDocument doc)
     pure $ BC.pack $ ppShow (resp :: t)
 
-main :: IO ()
-main = defaultMain $ testGroup "Parse SAML2 response"
+tests :: TestTree
+tests = testGroup "Parse SAML2 response"
     [ mkGolden @Response $ prefix </> "keycloak.xml"
     , mkGolden @Response $ prefix </> "okta.xml"
     , mkGolden @Response $ prefix </> "google.xml"
