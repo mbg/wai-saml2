@@ -41,7 +41,7 @@ dependencies:
   - x509 < 2
   - x509-store < 2
   - xml-conduit < 2
-  - zlib >= 0.6.0.0 && < 0.7
+  - zlib >= 0.6.0.0 && < 0.8
 
 library:
   source-dirs: src
