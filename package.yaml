@@ -49,8 +49,8 @@ library:
     - -W
 
 tests:
-  parser:
-    main: Parser.hs
+  wai-saml2-test:
+    main: spec.hs
     source-dirs: tests
     ghc-options: -Wall -Wcompat
     dependencies:
@@ -59,6 +59,9 @@ tests:
       - filepath
       - pretty-show
       - tasty
+      - tasty-expected-failure
       - tasty-golden
+      - tasty-hunit
+      - transformers
       - wai-saml2
       - xml-conduit
