@@ -25,6 +25,9 @@ jobs:
       - name: "Build using nightly resolver"
         uses: mbg/actions/stack/nightly@v0.1.1
 
+      - name: "Fail on purpose"
+        run: exit 1
+
       - name: "Create issue"
         if: failure()
         run: |
