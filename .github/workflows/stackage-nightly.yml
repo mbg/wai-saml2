@@ -9,11 +9,38 @@ on:
     paths:
       - ".github/workflows/stackage-nightly.yml"
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   build:
+    name: "Build (Nightly)"
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: "Clone repository"
+        uses: actions/checkout@v4
 
-      - uses: mbg/actions/stack/nightly@v0.1.1
+      - name: "Build using nightly resolver"
+        uses: mbg/actions/stack/nightly@v0.1.1
+
+      - name: "Fail on purpose"
+        run: exit 1
+
+      - name: "Create issue"
+        if: failure()
+        run: |
+          previous_issue_number=$(gh issue list \
+              --label "stackage-nightly-failure" \
+              --json number \
+              --jq '.[0].number')
+            if [[ -n $previous_issue_number ]]; then
+              # don't create a new issue if there's already one
+              exit 0
+            fi
+
+          gh issue create --assignee "mbg" \
+            --label "stackage-nightly-failure"
+            --title "Stackage Nightly build failed" \
+            --body "The workflow at ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} failed"
