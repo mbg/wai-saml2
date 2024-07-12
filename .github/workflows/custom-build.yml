@@ -35,13 +35,13 @@ jobs:
         if: inputs.resolver != ''
         shell: bash
         run: |
-          echo "resolver: ${{ inputs.resolver }}\n" >> custom.yaml
+          echo "resolver: ${{ inputs.resolver }}" >> custom.yaml
 
       - name: "Write ghc version"
         if: inputs.ghc != ''
         shell: bash
         run: |
-          echo "compiler: ${{ inputs.ghc }}\n" >> custom.yaml
+          echo "compiler: ${{ inputs.ghc }}" >> custom.yaml
 
       - name: "Build with Stack (custom configuration)"
         uses: mbg/actions/stack/build@v0.1
