@@ -1,8 +1,8 @@
 # Changelog for `wai-saml2`
 
-## Unreleased changes
+## 0.6
 
--   Switch from `x509-*` to `crypton-x509-*`.
+-   Switch from `x509-*` to `crypton-x509-*` ([#50](https://github.com/mbg/wai-saml2/pull/50) by [@mbg](https://github.com/mbg)).
 
 ## 0.5
 
