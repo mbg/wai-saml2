@@ -1,0 +1,49 @@
+name: "Custom Build"
+
+"on":
+  workflow_dispatch:
+    inputs:
+      os:
+        description: "The runner label to use for the build"
+        required: false
+        type: string
+        default: "ubuntu-latest"
+      ghc:
+        description: "The version of GHC to use for the build"
+        required: false
+        type: string
+      resolver:
+        description: "The name of the resolver to use"
+        required: false
+        type: string
+
+jobs:
+  custom-build:
+    runs-on: ${{ inputs.os }}
+
+    steps:
+      - name: "Clone repository"
+        uses: actions/checkout@v4
+
+      - name: "Remove existing Stack configuration"
+        shell: bash
+        run: |
+          # Remove custom.yaml if it exists
+          rm -f custom.yaml
+
+      - name: "Write resolver"
+        if: inputs.resolver != ''
+        shell: bash
+        run: |
+          echo "resolver: ${{ inputs.resolver }}\n" >> custom.yaml
+
+      - name: "Write ghc version"
+        if: inputs.ghc != ''
+        shell: bash
+        run: |
+          echo "compiler: ${{ inputs.ghc }}\n" >> custom.yaml
+
+      - name: "Build with Stack (custom configuration)"
+        uses: mbg/actions/stack/build@v0.1
+        with:
+          resolver: "custom"
