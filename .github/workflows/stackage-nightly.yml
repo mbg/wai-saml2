@@ -11,6 +11,10 @@ on:
     paths:
       - ".github/workflows/stackage-nightly.yml"
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   build:
     name: "Build"
