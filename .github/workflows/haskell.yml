@@ -2,16 +2,20 @@ name: Haskell
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
+      - main
     tags:
       - "v*"
     paths:
-      - ".github/workflows/**"
+      - ".github/workflows/haskell.yml"
       - "src/**"
       - "package.yaml"
       - "stack*.yaml"
   pull_request:
-    branches: [master]
+    branches:
+      - master
+      - main
 
 permissions:
   contents: read
@@ -31,9 +35,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: "Clone repository"
+        uses: actions/checkout@v4
 
-      - uses: mbg/actions/stack/build@v0.1.2
+      - name: "Build with Stack (${{ matrix.resolver }})"
+        uses: mbg/actions/stack/build@v0.1.2
         with:
           resolver: ${{ matrix.resolver }}
           upload-docs: true
