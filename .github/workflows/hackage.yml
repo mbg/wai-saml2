@@ -15,9 +15,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: "Clone repository"
+        uses: actions/checkout@v4
 
-      - uses: haskell/actions/setup@v2
+      - name: "Install Stack"
+        uses: haskell-actions/setup@v2
         id: install-haskell
         with:
           stack-no-global: true
