@@ -4,3 +4,4 @@ extra-deps:
   - crypton-0.31@sha256:c0e4aa081bd65d1cb415358ec43e83e7fe703c83b633243a89162bd6eb865850,18286
   - crypton-x509-1.7.6
   - crypton-x509-store-1.6.9
+  - c14n-0.1.0.3@sha256:71d230741cbe6023e3b3ef43c4acf79d18cc3631d956b2261e4a170302baaebc,1163
