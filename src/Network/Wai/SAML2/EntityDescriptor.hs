@@ -36,8 +36,9 @@ data IDPSSODescriptor
     = IDPSSODescriptor {
         -- | IdP Entity ID. 'Network.Wai.SAML2.Config.saml2ExpectedIssuer' should be compared against this identifier
         entityID :: Text
-        -- | The X.509 certificate for signed assertions
-    ,   x509Certificate :: X509.SignedExact X509.Certificate
+        -- | @since 0.7
+        -- The X.509 certificates for signed assertions
+    ,   x509Certificates :: [X509.SignedExact X509.Certificate]
         -- | Supported NameID formats
     ,   nameIDFormats :: [Text]
         -- | List of SSO urls corresponding to 'Binding's
@@ -66,16 +67,18 @@ instance FromXML IDPSSODescriptor where
         let entityID = T.concat $ attribute "entityID" cursor
         descriptor <- oneOrFail "IDPSSODescriptor is required"
             $ cursor $/ element (mdName "IDPSSODescriptor")
-        rawCertificate <- oneOrFail "X509Certificate is required" $ descriptor
-            $/ element (mdName "KeyDescriptor")
-            &/ element (dsName "KeyInfo")
-            &/ element (dsName "X509Data")
-            &/ element (dsName "X509Certificate")
-            &/ content
-        x509Certificate <- either fail pure
-            $ X509.decodeSignedObject
-            $ Base64.decodeLenient
-            $ T.encodeUtf8 rawCertificate
+        let rawCertificates = descriptor
+                $/ element (mdName "KeyDescriptor")
+                &/ element (dsName "KeyInfo")
+                &/ element (dsName "X509Data")
+                &/ element (dsName "X509Certificate")
+                &/ content
+        x509Certificates <- traverse
+            ( either fail pure
+            . X509.decodeSignedObject
+            . Base64.decodeLenient
+            . T.encodeUtf8
+            ) rawCertificates
         let nameIDFormats = descriptor
                 $/ element (mdName "NameIDFormat")
                 &/ content
