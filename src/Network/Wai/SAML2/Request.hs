@@ -33,6 +33,7 @@ module Network.Wai.SAML2.Request (
 
 import Crypto.Random
 
+import Data.Foldable (toList)
 import Data.Time.Clock
 
 import Network.Wai.SAML2.NameIDFormat
@@ -132,7 +133,7 @@ renderXML AuthnRequest{..} =
                 , ("AssertionConsumerServiceIndex", "1") -- [AuthnRequest]
                 ]
                 -- [RequestAbstractType]
-                ++ [("Destination", uri) | let Just uri = authnRequestDestination] ))
+                ++ [("Destination", uri) | uri <- toList authnRequestDestination] ))
             [NodeElement issuer, NodeElement nameIdPolicy]
         -- Reference [RequestAbstractType]
         issuer = Element
