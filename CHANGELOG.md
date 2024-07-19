@@ -1,5 +1,9 @@
 # Changelog for `wai-saml2`
 
+## 0.7
+
+-   Replaced `x509Certificate` with `x509Certificates` in `IDPSSODescriptor` so that it may have more than one certificate ([#65](https://github.com/mbg/wai-saml2/pull/65) by [@fumieval](https://github.com/fumieval))
+
 ## 0.6
 
 -   Switch from `x509-*` to `crypton-x509-*` ([#50](https://github.com/mbg/wai-saml2/pull/50) by [@mbg](https://github.com/mbg)).
