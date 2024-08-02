@@ -83,16 +83,10 @@ decodeResponse responseData = do
         Left err -> throwError $ InvalidResponse err
         Right samlResponse -> pure (responseXmlDoc, samlResponse)
 
--- | 'validateSAMLResponse' @cfg doc response timestamp@ validates a decoded SAML2
--- response using the given @timestamp@.
+-- | 'validateSAMLPreliminary' @cfg samlResponse@ validates the status code, destination, and issuer of a SAML2 response.
 --
--- @since 0.4
-validateSAMLResponse :: SAML2Config
-                     -> XML.Document
-                     -> Response
-                     -> UTCTime
-                     -> ExceptT SAML2Error IO Assertion
-validateSAMLResponse cfg responseXmlDoc samlResponse now = do
+validateSAMLPreliminary :: SAML2Config -> Response -> ExceptT SAML2Error IO ()
+validateSAMLPreliminary cfg samlResponse = do
 
     -- check that the response indicates success
     case statusCodeValue $ responseStatusCode samlResponse of
@@ -118,6 +112,29 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
             | issuer /= expectedIssuer -> throwError $ InvalidIssuer issuer
         _ -> pure ()
 
+-- | 'validateSAMLResponse' @cfg doc response timestamp@ validates a decoded SAML2
+-- response using the given @timestamp@.
+--
+-- @since 0.4
+validateSAMLResponse :: SAML2Config
+                     -> XML.Document
+                     -> Response
+                     -> UTCTime
+                     -> ExceptT SAML2Error IO Assertion
+validateSAMLResponse cfg responseXmlDoc samlResponse now = do
+
+    validateSAMLPreliminary cfg samlResponse
+
+    case responseSignature samlResponse of
+        Just _ -> validateSAMLResponseSignature cfg responseXmlDoc samlResponse now
+        Nothing -> validateSAMLAssertionSignature cfg responseXmlDoc samlResponse now
+
+validateSAMLResponseSignature :: SAML2Config
+                     -> XML.Document
+                     -> Response
+                     -> UTCTime
+                     -> ExceptT SAML2Error IO Assertion
+validateSAMLResponseSignature cfg responseXmlDoc samlResponse now = do
     --  ***CORE VALIDATION***
     -- See https://www.w3.org/TR/xmldsig-core1/#sec-CoreValidation
     --
@@ -125,20 +142,6 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
     -- 1. We extract the SignedInfo element from the SAML2 response's
     -- Signature element. This element contains
     signedInfo <- extractSignedInfo (XML.fromDocument responseXmlDoc)
-
-    -- construct a new XML document from the SignedInfo element and render
-    -- it into a textual representation
-    let doc = XML.Document (XML.Prologue [] Nothing []) signedInfo []
-    let signedInfoXml = XML.renderLBS def doc
-
-    -- canonicalise the textual representation of the SignedInfo element
-    let prefixList = extractPrefixList (XML.fromDocument doc)
-    signedInfoCanonResult <- liftIO $ try $
-        canonicalise prefixList (LBS.toStrict signedInfoXml)
-
-    normalisedSignedInfo <- case signedInfoCanonResult of
-        Left err -> throwError $ CanonicalisationFailure err
-        Right result -> pure result
 
     signature <- case responseSignature samlResponse of
         Just sig -> pure sig
@@ -164,6 +167,34 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
     -- from it (since the Response cannot possibly have been hashed with
     -- the Signature element present). First remove the Signature element:
     let docMinusSignature = removeSignature responseXmlDoc
+
+    validateSAMLSignature ValidationContext{..}
+
+data ValidationContext = ValidationContext
+    { cfg :: !SAML2Config
+    , docMinusSignature :: !XML.Document
+    , now :: !UTCTime
+    , responseXmlDoc :: !XML.Document
+    , samlResponse :: !Response
+    , signature :: !Signature
+    , signedInfo :: !XML.Element
+    }
+
+validateSAMLSignature :: ValidationContext -> ExceptT SAML2Error IO Assertion
+validateSAMLSignature ValidationContext{..} = do
+    -- construct a new XML document from the SignedInfo element and render
+    -- it into a textual representation
+    let doc = XML.Document (XML.Prologue [] Nothing []) signedInfo []
+    let signedInfoXml = XML.renderLBS def doc
+
+    -- canonicalise the textual representation of the SignedInfo element
+    let prefixList = extractPrefixList (XML.fromDocument doc)
+    signedInfoCanonResult <- liftIO $ try $
+        canonicalise prefixList (LBS.toStrict signedInfoXml)
+
+    normalisedSignedInfo <- case signedInfoCanonResult of
+        Left err -> throwError $ CanonicalisationFailure err
+        Right result -> pure result
 
     -- then render the resulting document and canonicalise it
     let renderedXml = XML.renderLBS def docMinusSignature
@@ -234,6 +265,32 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
 
     -- all checks out, return the assertion
     pure assertion
+
+validateSAMLAssertionSignature :: SAML2Config -> XML.Document -> Response -> UTCTime -> ExceptT SAML2Error IO Assertion
+validateSAMLAssertionSignature cfg responseXmlDoc samlResponse now = do
+    assertion <- case responseAssertion samlResponse of
+        Just a -> pure a
+        _ -> throwError $ InvalidResponse $ userError "Assertion is required"
+
+    signature <- case assertionSignature assertion of
+        Just a -> pure a
+        _ -> throwError $ InvalidResponse $ userError "Assertion signature is required"
+
+    -- Obtain the XML node of the assertion for validation
+    assertionXml <- oneOrFail "Assertion is required" $
+        XML.fromDocument responseXmlDoc XML.$/ XML.element (saml2Name "Assertion")
+
+    signedInfo <- extractSignedInfo assertionXml
+
+    docMinusSignature <- removeSignature <$> case XML.node assertionXml of
+        XML.NodeElement node -> pure XML.Document
+            { documentPrologue = XML.Prologue [] Nothing []
+            , documentRoot = node
+            , documentEpilogue = []
+            }
+        _ -> throwError $ InvalidResponse $ userError "Assertion is required"
+
+    validateSAMLSignature ValidationContext{..}
 
 -- | `decryptAssertion` @key encryptedAssertion@ decrypts the AES key in
 -- @encryptedAssertion@ using `key`, then decrypts the contents using
