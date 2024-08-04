@@ -232,7 +232,7 @@ data AssertionAttribute = AssertionAttribute {
     attributeNameFormat :: !T.Text,
     -- | The value of the attribute, concatened from the 'attributeValues'.
     attributeValue :: !T.Text,
-    -- | The value of the attribute.
+    -- | The values of the attribute.
     --
     -- @since 0.7
     attributeValues :: ![T.Text]
