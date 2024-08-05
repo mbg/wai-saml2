@@ -11,7 +11,6 @@ import Network.Wai.SAML2
 import Network.Wai.SAML2.Validation
 import System.FilePath
 import Test.Tasty
-import Test.Tasty.ExpectedFailure
 import Test.Tasty.HUnit
 
 -- | Get a public key from a X.509 certificate
@@ -46,7 +45,7 @@ tests :: TestTree
 tests = testGroup "Validate SAML2 Response"
     [ testCase "AzureAD signed response"
         $ run "azuread.crt" "2023-05-10T01:20:00Z" "azuread-signed-response.xml"
-    , expectFail $ testCase "AzureAD signed assertion"
+    , testCase "AzureAD signed assertion"
         $ run "azuread.crt" "2023-05-09T16:00:00Z" "azuread-signed-assertion.xml"
     , testCase "Okta with AttributeStatement"
         $ run "okta.crt" "2023-06-16T06:43:00.000Z" "okta-attributes.xml"
