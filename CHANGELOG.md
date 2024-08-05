@@ -3,6 +3,7 @@
 ## 0.7
 
 -   Replaced `x509Certificate` with `x509Certificates` in `IDPSSODescriptor` so that it may have more than one certificate ([#65](https://github.com/mbg/wai-saml2/pull/65) by [@fumieval](https://github.com/fumieval))
+-   Added `attributeValues` to `AssertionAttribute` in order to handle multiple attribute values with the same name ([#67](https://github.com/mbg/wai-saml2/pull/67) by [@fumieval](https://github.com/fumieval))
 
 ## 0.6
 
