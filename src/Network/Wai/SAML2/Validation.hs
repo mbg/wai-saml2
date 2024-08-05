@@ -140,6 +140,10 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
         Left err -> throwError $ CanonicalisationFailure err
         Right result -> pure result
 
+    signature <- case responseSignature samlResponse of
+        Just sig -> pure sig
+        Nothing -> throwError $ InvalidResponse $ userError "Response Signature is required"
+
     -- 2. At this point we should dereference all elements identified by
     -- Reference elements inside the SignedInfo element. However, we do
     -- not currently do that and instead just assume that there is only
@@ -149,8 +153,7 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
     let documentId = responseId samlResponse
     let referenceId = referenceURI
                     $ signedInfoReference
-                    $ signatureInfo
-                    $ responseSignature samlResponse
+                    $ signatureInfo signature
 
     if documentId /= referenceId
     then throwError $ UnexpectedReference referenceId
@@ -180,8 +183,7 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
                       $ BS.decodeLenient
                       $ referenceDigestValue
                       $ signedInfoReference
-                      $ signatureInfo
-                      $ responseSignature samlResponse
+                      $ signatureInfo signature
 
     if Just documentHash /= referenceHash
     then throwError InvalidDigest
@@ -191,7 +193,7 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
     -- We need to check that the SignedInfo element has not been tampered
     -- with, which we do by checking the signature contained in the response;
     -- first: extract the signature data from the response
-    let sig = BS.decodeLenient $ signatureValue $ responseSignature samlResponse
+    let sig = BS.decodeLenient $ signatureValue signature
 
     -- using the IdP's public key and the canonicalised SignedInfo element,
     -- check that the signature is correct
