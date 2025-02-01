@@ -28,7 +28,9 @@ run certPath timestamp respPath = do
     now <- iso8601ParseM timestamp
 
     let pub = parseCertificate cert
-        cfg = saml2ConfigNoEncryption pub
+        cfg = (saml2ConfigNoEncryption pub) {
+            saml2ValidationTarget = ValidateEither
+        }
 
     assertion <- runExceptT $ do
         (responseXmlDoc, samlResponse) <- decodeResponse $ Base64.encode xml

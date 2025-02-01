@@ -8,6 +8,7 @@
 -- | Configuration types and smart constructors for the SAML2 middleware.
 module Network.Wai.SAML2.Config (
     SAML2Config(..),
+    ValidationTarget(..),
     saml2Config,
     saml2ConfigNoEncryption
 ) where
@@ -50,8 +51,17 @@ data SAML2Config = SAML2Config {
     -- | Always decrypt assertions using 'saml2PrivateKey' and reject plaintext assertions.
     --
     -- @since 0.4
-    saml2RequireEncryptedAssertion :: !Bool
+    saml2RequireEncryptedAssertion :: !Bool,
+
+    -- | Which part of the SAML2 response to validate.
+    saml2ValidationTarget :: !ValidationTarget
 }
+
+-- | Which part of the SAML2 response to validate.
+data ValidationTarget
+    = ValidateAssertion
+    | ValidateResponse
+    | ValidateEither
 
 -- | 'saml2Config' @privateKey publicKey@ constructs a 'SAML2Config' value
 -- with the most basic set of options possible using @privateKey@ as the
@@ -79,7 +89,8 @@ saml2ConfigNoEncryption pubKey = SAML2Config{
     saml2ExpectedDestination = Nothing,
     saml2Audiences = [],
     saml2DisableTimeValidation = False,
-    saml2RequireEncryptedAssertion = False
+    saml2RequireEncryptedAssertion = False,
+    saml2ValidationTarget = ValidateResponse
 }
 
 --------------------------------------------------------------------------------

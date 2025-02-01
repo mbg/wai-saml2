@@ -125,9 +125,14 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
 
     validateSAMLPreliminary cfg samlResponse
 
-    case responseSignature samlResponse of
-        Just signature -> validateSAMLResponseSignature cfg responseXmlDoc samlResponse signature now
-        Nothing -> validateSAMLAssertionSignature cfg responseXmlDoc samlResponse now
+    case saml2ValidationTarget cfg of
+        ValidateAssertion -> validateSAMLAssertionSignature cfg responseXmlDoc samlResponse now
+        ValidateResponse -> case responseSignature samlResponse of
+            Just signature -> validateSAMLResponseSignature cfg responseXmlDoc samlResponse signature now
+            Nothing -> throwError ResponseSignatureMissing
+        ValidateEither -> case responseSignature samlResponse of
+            Just signature -> validateSAMLResponseSignature cfg responseXmlDoc samlResponse signature now
+            Nothing -> validateSAMLAssertionSignature cfg responseXmlDoc samlResponse now
 
 data ValidationContext = ValidationContext
     { cfg :: SAML2Config
