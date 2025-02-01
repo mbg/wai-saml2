@@ -145,7 +145,7 @@ validateSAMLResponseSignature cfg responseXmlDoc samlResponse now = do
 
     signature <- case responseSignature samlResponse of
         Just sig -> pure sig
-        Nothing -> throwError $ InvalidResponse $ userError "Response Signature is required"
+        Nothing -> throwError ResponseSignatureMissing
 
     -- 2. At this point we should dereference all elements identified by
     -- Reference elements inside the SignedInfo element. However, we do
@@ -242,7 +242,7 @@ validateSAMLSignature ValidationContext{..} = do
             | saml2RequireEncryptedAssertion cfg -> throwError EncryptedAssertionRequired
             | otherwise -> case responseAssertion samlResponse of
                 Just plain -> pure plain
-                Nothing -> throwError $ InvalidResponse $ userError "Assertion or EncryptedAssertion is required"
+                Nothing -> throwError AssertionMissing
 
     -- validate that the assertion is valid at this point in time
     let Conditions{..} = assertionConditions assertion
@@ -270,11 +270,11 @@ validateSAMLAssertionSignature :: SAML2Config -> XML.Document -> Response -> UTC
 validateSAMLAssertionSignature cfg responseXmlDoc samlResponse now = do
     assertion <- case responseAssertion samlResponse of
         Just a -> pure a
-        _ -> throwError $ InvalidResponse $ userError "Assertion is required"
+        _ -> throwError AssertionMissing
 
     signature <- case assertionSignature assertion of
         Just a -> pure a
-        _ -> throwError $ InvalidResponse $ userError "Assertion signature is required"
+        _ -> throwError AssertionSignatureMissing
 
     -- Obtain the XML node of the assertion for validation
     assertionXml <- oneOrFail "Assertion is required" $
@@ -288,7 +288,7 @@ validateSAMLAssertionSignature cfg responseXmlDoc samlResponse now = do
             , documentRoot = node
             , documentEpilogue = []
             }
-        _ -> throwError $ InvalidResponse $ userError "Assertion is required"
+        _ -> throwError $ InvalidResponse $ userError "Assertion is not a valid XML element"
 
     validateSAMLSignature ValidationContext{..}
 
