@@ -139,6 +139,7 @@ data ValidationContext = ValidationContext
     , docMinusSignature :: XML.Document
     }
 
+-- | Validate a response signature and return the assertion.
 validateSAMLResponseSignature :: SAML2Config
                      -> XML.Document
                      -> Response
@@ -263,6 +264,7 @@ validateSAMLSignature ValidationContext{..} = do
     -- all checks out, return the assertion
     pure assertion
 
+-- | Validate the signature of an assertion and return the assertion.
 validateSAMLAssertionSignature :: SAML2Config -> XML.Document -> Response -> UTCTime -> ExceptT SAML2Error IO Assertion
 validateSAMLAssertionSignature cfg responseXmlDoc samlResponse now = do
     assertion <- case responseAssertion samlResponse of
