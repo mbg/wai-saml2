@@ -129,6 +129,16 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
         Just _ -> validateSAMLResponseSignature cfg responseXmlDoc samlResponse now
         Nothing -> validateSAMLAssertionSignature cfg responseXmlDoc samlResponse now
 
+data ValidationContext = ValidationContext
+    { cfg :: SAML2Config
+    , responseXmlDoc :: XML.Document
+    , samlResponse :: Response
+    , now :: UTCTime
+    , signedInfo :: XML.Element
+    , signature :: Signature
+    , docMinusSignature :: XML.Document
+    }
+
 validateSAMLResponseSignature :: SAML2Config
                      -> XML.Document
                      -> Response
@@ -169,16 +179,6 @@ validateSAMLResponseSignature cfg responseXmlDoc samlResponse now = do
     let docMinusSignature = removeSignature responseXmlDoc
 
     validateSAMLSignature ValidationContext{..}
-
-data ValidationContext = ValidationContext
-    { cfg :: !SAML2Config
-    , docMinusSignature :: !XML.Document
-    , now :: !UTCTime
-    , responseXmlDoc :: !XML.Document
-    , samlResponse :: !Response
-    , signature :: !Signature
-    , signedInfo :: !XML.Element
-    }
 
 validateSAMLSignature :: ValidationContext -> ExceptT SAML2Error IO Assertion
 validateSAMLSignature ValidationContext{..} = do
