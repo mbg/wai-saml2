@@ -126,7 +126,7 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
     validateSAMLPreliminary cfg samlResponse
 
     case responseSignature samlResponse of
-        Just _ -> validateSAMLResponseSignature cfg responseXmlDoc samlResponse now
+        Just signature -> validateSAMLResponseSignature cfg responseXmlDoc samlResponse signature now
         Nothing -> validateSAMLAssertionSignature cfg responseXmlDoc samlResponse now
 
 data ValidationContext = ValidationContext
@@ -142,9 +142,10 @@ data ValidationContext = ValidationContext
 validateSAMLResponseSignature :: SAML2Config
                      -> XML.Document
                      -> Response
+                     -> Signature
                      -> UTCTime
                      -> ExceptT SAML2Error IO Assertion
-validateSAMLResponseSignature cfg responseXmlDoc samlResponse now = do
+validateSAMLResponseSignature cfg responseXmlDoc samlResponse signature now = do
     --  ***CORE VALIDATION***
     -- See https://www.w3.org/TR/xmldsig-core1/#sec-CoreValidation
     --
@@ -152,10 +153,6 @@ validateSAMLResponseSignature cfg responseXmlDoc samlResponse now = do
     -- 1. We extract the SignedInfo element from the SAML2 response's
     -- Signature element. This element contains
     signedInfo <- extractSignedInfo (XML.fromDocument responseXmlDoc)
-
-    signature <- case responseSignature samlResponse of
-        Just sig -> pure sig
-        Nothing -> throwError ResponseSignatureMissing
 
     -- 2. At this point we should dereference all elements identified by
     -- Reference elements inside the SignedInfo element. However, we do
