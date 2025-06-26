@@ -54,13 +54,20 @@ data SAML2Config = SAML2Config {
     saml2RequireEncryptedAssertion :: !Bool,
 
     -- | Which part of the SAML2 response to validate.
+    --
+    -- @since 0.7
     saml2ValidationTarget :: !ValidationTarget
 }
 
 -- | Which part of the SAML2 response to validate.
+--
+-- @since 0.7
 data ValidationTarget
+    -- | Passes validation if the assertion signature is valid.
     = ValidateAssertion
+    -- | Passes validation if the response signature is valid.
     | ValidateResponse
+    -- | Passes validation if either the assertion or the response signature is valid.
     | ValidateEither
 
 -- | 'saml2Config' @privateKey publicKey@ constructs a 'SAML2Config' value
