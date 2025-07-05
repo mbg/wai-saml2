@@ -73,6 +73,12 @@ data SAML2Error
     --
     -- @since 0.4
     | EncryptedAssertionNotSupported
+    -- | The response is missing an assertion.
+    | AssertionMissing
+    -- | The response is missing a signature for the assertion.
+    | AssertionSignatureMissing
+    -- | The response is missing a signature for the response.
+    | ResponseSignatureMissing
     deriving Show
 
 --------------------------------------------------------------------------------

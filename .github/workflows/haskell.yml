@@ -26,6 +26,9 @@ jobs:
       fail-fast: false
       matrix:
         resolver:
+          - stack-lts-23
+          - stack-lts-22
+          - stack-lts-21
           - stack-lts-20
           - stack-lts-19
           - stack-lts-18
