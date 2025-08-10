@@ -30,3 +30,17 @@ This package follows the [Haskell Package Versioning Policy](https://pvp.haskell
 ### Changelog
 
 Update the top of `CHANGELOG.md` with a section for the new version and a list of bullet points documenting your changes (documentation changes do not need to be documented in the changelog). If your change does not require a bump of the version number, just add a section titled "Unreleased".
+
+## Release process (Write-access required)
+
+This documents the release process for the `wai-saml2` library.
+
+1. [Compare](https://github.com/mbg/wai-saml2/compare/wai-saml2-0.6...main) the changes in `main` to the latest release tag.
+1. Identify and address any missing `@since` annotations, missing comments, etc.
+1. Bump the version in `package.yaml` and re-generate the `.cabal` file.
+1. Ensure that `CHANGELOG.md` does not contain an "Unreleased" section and reflects the `package.yaml` version.
+1. Tag the commit with `wai-saml2-[version]` and push the tags.
+1. This should automatically start a dry run of the [release workflow](https://github.com/mbg/wai-saml2/actions/workflows/hackage.yml). Check that this succeeds and there are no issues in the workflow log that should be addressed before proceeding.
+1. Create a new release for the release tag.
+1. Publish the release. This will automatically start the [release workflow](https://github.com/mbg/wai-saml2/actions/workflows/hackage.yml). There is a 1 minute gate at the start during which the workflow can be stopped before it proceeds.
+1. The release workflow will upload the new package version as a release candidate on Hackage. If all is good, publish the release candidate on Hackage.
