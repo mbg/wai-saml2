@@ -17,6 +17,9 @@ name: "Custom Build"
         required: false
         type: string
 
+permissions:
+  contents: read
+
 jobs:
   custom-build:
     runs-on: ${{ inputs.os }}
@@ -35,13 +38,13 @@ jobs:
         if: inputs.resolver != ''
         shell: bash
         run: |
-          echo "resolver: ${{ inputs.resolver }}" >> custom.yaml
+          echo "resolver: ${{ inputs.resolver }}\n" >> custom.yaml
 
       - name: "Write ghc version"
         if: inputs.ghc != ''
         shell: bash
         run: |
-          echo "compiler: ${{ inputs.ghc }}" >> custom.yaml
+          echo "compiler: ${{ inputs.ghc }}\n" >> custom.yaml
 
       - name: "Build with Stack (custom configuration)"
         uses: mbg/actions/stack/build@v0.2
