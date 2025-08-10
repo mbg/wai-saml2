@@ -5,7 +5,7 @@
 -- file in the root directory of this source tree.                            --
 --------------------------------------------------------------------------------
 
--- | Functions to process and validate SAML2 respones.
+-- | Functions to process and validate SAML2 responses.
 module Network.Wai.SAML2.Validation (
     validateResponse,
     decodeResponse,
@@ -83,8 +83,10 @@ decodeResponse responseData = do
         Left err -> throwError $ InvalidResponse err
         Right samlResponse -> pure (responseXmlDoc, samlResponse)
 
--- | 'validateSAMLPreliminary' @cfg samlResponse@ validates the status code, destination, and issuer of a SAML2 response.
+-- | 'validateSAMLPreliminary' @cfg samlResponse@ validates the status code,
+-- destination, and issuer of @samlResponse@ according to @cfg@.
 --
+-- @since 0.7
 validateSAMLPreliminary :: SAML2Config -> Response -> ExceptT SAML2Error IO ()
 validateSAMLPreliminary cfg samlResponse = do
 
@@ -122,7 +124,6 @@ validateSAMLResponse :: SAML2Config
                      -> UTCTime
                      -> ExceptT SAML2Error IO Assertion
 validateSAMLResponse cfg responseXmlDoc samlResponse now = do
-
     validateSAMLPreliminary cfg samlResponse
 
     case saml2ValidationTarget cfg of
@@ -134,23 +135,30 @@ validateSAMLResponse cfg responseXmlDoc samlResponse now = do
             Just signature -> validateSAMLResponseSignature cfg responseXmlDoc samlResponse signature now
             Nothing -> validateSAMLAssertionSignature cfg responseXmlDoc samlResponse now
 
-data ValidationContext = ValidationContext
-    { cfg :: SAML2Config
-    , responseXmlDoc :: XML.Document
-    , samlResponse :: Response
-    , now :: UTCTime
-    , signedInfo :: XML.Element
-    , signature :: Signature
-    , docMinusSignature :: XML.Document
-    }
+-- | Represents state required for the validation of a SAML2 response.
+--
+-- @since 0.7
+data ValidationContext = ValidationContext {
+    cfg :: SAML2Config,
+    responseXmlDoc :: XML.Document,
+    samlResponse :: Response,
+    now :: UTCTime,
+    signedInfo :: XML.Element,
+    signature :: Signature,
+    docMinusSignature :: XML.Document
+}
 
--- | Validate a response signature and return the assertion.
-validateSAMLResponseSignature :: SAML2Config
-                     -> XML.Document
-                     -> Response
-                     -> Signature
-                     -> UTCTime
-                     -> ExceptT SAML2Error IO Assertion
+-- | `validateSAMLResponseSignature` validates a response signature
+-- and returns the assertion.
+--
+-- @since 0.7
+validateSAMLResponseSignature
+    :: SAML2Config
+    -> XML.Document
+    -> Response
+    -> Signature
+    -> UTCTime
+    -> ExceptT SAML2Error IO Assertion
 validateSAMLResponseSignature cfg responseXmlDoc samlResponse signature now = do
     --  ***CORE VALIDATION***
     -- See https://www.w3.org/TR/xmldsig-core1/#sec-CoreValidation
@@ -183,6 +191,11 @@ validateSAMLResponseSignature cfg responseXmlDoc samlResponse signature now = do
 
     validateSAMLSignature ValidationContext{..}
 
+-- | `validateSAMLSignature` @validationContext@ validates the SAML2 response
+-- according to @validationContext@ and returns the `Assertion` contained in it
+-- if validation is successful.
+--
+-- @since 0.7
 validateSAMLSignature :: ValidationContext -> ExceptT SAML2Error IO Assertion
 validateSAMLSignature ValidationContext{..} = do
     -- construct a new XML document from the SignedInfo element and render
@@ -269,8 +282,16 @@ validateSAMLSignature ValidationContext{..} = do
     -- all checks out, return the assertion
     pure assertion
 
--- | Validate the signature of an assertion and return the assertion.
-validateSAMLAssertionSignature :: SAML2Config -> XML.Document -> Response -> UTCTime -> ExceptT SAML2Error IO Assertion
+-- | `validateSAMLAssertionSignature` @cfg doc res time@ validates the assertion signature
+-- contained in @res@ and returns the `Assertion` if the response can be validated.
+--
+-- @since 0.7
+validateSAMLAssertionSignature
+    :: SAML2Config
+    -> XML.Document
+    -> Response
+    -> UTCTime
+    -> ExceptT SAML2Error IO Assertion
 validateSAMLAssertionSignature cfg responseXmlDoc samlResponse now = do
     assertion <- case responseAssertion samlResponse of
         Just a -> pure a

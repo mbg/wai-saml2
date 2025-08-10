@@ -281,6 +281,8 @@ data Assertion = Assertion {
     -- | The assertion's attribute statement.
     assertionAttributeStatement :: !AttributeStatement,
     -- | The assertion's signature.
+    --
+    -- @since 0.7
     assertionSignature :: !(Maybe Signature)
 } deriving (Eq, Show)
 

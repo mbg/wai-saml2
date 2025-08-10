@@ -55,7 +55,11 @@ data Response = Response {
     responseIssuer :: !T.Text,
     -- | The status of the response.
     responseStatusCode :: !StatusCode,
-    -- | The response signature.
+    -- | The optional response signature. Some IdPs may not include this in the response
+    -- and may instead include a signature in the assertion.
+    -- If so, you should set the @saml2ValidationTarget@ to @ValidateAssertion@.
+    -- The `responseSignature` is expected to be some value and will be validated if
+    -- @saml2ValidationTarget@ is @ValidateResponse@.
     responseSignature :: !(Maybe Signature),
     -- | The unencrypted assertion.
     --
