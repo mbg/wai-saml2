@@ -31,7 +31,11 @@ You need to have registered your service provider with the identity provider. Yo
 
 ### Configuration
 
-The `saml2Config` function may be used to construct `SAML2Config` values. It expects at least the SP's private key and the IdP's public key as arguments (even when mandatory encryption is disabled) but you should almost certainly customise the configuration further. The private and public keys can be loaded with functions from the `Data.X509` and `Data.X509.File` modules (from the `x509` and `x509-store` packages, respectively):
+How to configure this library depends on your IdP's configuration. You should consult the relevant documentation for your IdP as well as review your SP's configuration on the IdP end. You should almost certainly customise the configuration beyond the defaults described below.
+
+The `saml2Config` function may be used to construct `SAML2Config` values. Configurations constructed with `saml2Config` expect assertions to be encrypted. If you expect assertions to be unencrypted, then you may wish to start with `saml2ConfigNoEncryption` instead.
+
+Since the `saml2Config` function expects encrypted assertions, it needs at least the SP's private key and the IdP's public key as arguments (even when mandatory encryption is disabled). The private and public keys can be loaded with functions from the `Data.X509` and `Data.X509.File` modules (from the `x509` and `x509-store` packages, respectively):
 
 ```haskell
 (saml2Config spPrivateKey idpPublicKey){
@@ -41,7 +45,7 @@ The `saml2Config` function may be used to construct `SAML2Config` values. It exp
 }
 ```
 
-The configuration options are documented in the Haddock documentation for the `Network.Wai.SAML2.Config` module.
+The configuration options (`saml2AssertionPath`, `saml2ExpectedIssuer`, `saml2ExpectedDestination`, etc.) are documented in the Haddock documentation for the `Network.Wai.SAML2.Config` module.
 
 ### Implementation
 
