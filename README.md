@@ -47,6 +47,8 @@ Since the `saml2Config` function expects encrypted assertions, it needs at least
 
 The configuration options (`saml2AssertionPath`, `saml2ExpectedIssuer`, `saml2ExpectedDestination`, etc.) are documented in the Haddock documentation for the `Network.Wai.SAML2.Config` module.
 
+Both `saml2Config` and `saml2ConfigNoEncryption` construct configurations which validate only the response signature. If you need to validate the assertion signature, you must change the `saml2ValidationTarget` property to `ValidateAssertion`. This can also be set to `ValidateEither`, which will require __either__ the response signature __or__ the assertion signature to be valid. Do not use `ValidateEither` unless your IdP requires this.
+
 ### Implementation
 
 Two interfaces to the middleware are provided. See the Haddock documentation for the `Network.Wai.SAML2` module for full usage examples. An example using the `saml2Callback` variant is shown below, where `cfg` is a `SAML2Config` value and `mainApp` is your existing WAI application:
