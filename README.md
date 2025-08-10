@@ -45,7 +45,7 @@ The configuration options are documented in the Haddock documentation for the `N
 
 ### Implementation
 
-Two interfaces to the middleware are provided. See the Haddock documentation for the `Network.Wai.SAML2` module for full usage examples. An example using the `saml2Callback` variant is shown below, where `cfg` is a `SAML2Config` value and `app` is your existing WAI application:
+Two interfaces to the middleware are provided. See the Haddock documentation for the `Network.Wai.SAML2` module for full usage examples. An example using the `saml2Callback` variant is shown below, where `cfg` is a `SAML2Config` value and `mainApp` is your existing WAI application:
 
 ```haskell
 saml2Callback cfg callback mainApp
