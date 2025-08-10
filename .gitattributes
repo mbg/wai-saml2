@@ -1,0 +1,2 @@
+**/*.cabal linguist-generated=true
+stack*.yaml.lock linguist-generated=true
