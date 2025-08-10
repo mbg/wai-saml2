@@ -6,17 +6,33 @@ on:
       - ".github/workflows/hackage.yml"
   release:
     types:
-      - released
-      - prereleased
+      - created
+      - published
+
+concurrency:
+  group: hackage
+  cancel-in-progress: false
 
 jobs:
   publish-to-hackage:
     name: "Publish to Hackage"
     runs-on: ubuntu-latest
 
+    environment:
+      name: ${{ (github.event.action == 'published' && 'Hackage') || '' }}
+      url: "https://hackage.haskell.org/package/wai-saml2-${{ steps.determine-version.outputs.version }}"
+
     steps:
       - name: "Clone repository"
         uses: actions/checkout@v4
+
+      - name: "Determine version"
+        id: determine-version
+        shell: bash
+        run: |
+          PACKAGE_VERSION="$(yq '.version' package.yaml)"
+          echo $PACKAGE_VERSION
+          echo "version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
 
       - name: "Install Stack"
         uses: haskell-actions/setup@v2
@@ -26,18 +42,13 @@ jobs:
           enable-stack: true
           stack-version: "latest"
 
-      - name: Configure stack
-        run: |
-          echo ${{ github.event.action }}
-          mkdir -p ${{ steps.install-haskell.outputs.stack-root }}
-          echo "save-hackage-creds: false" >> ${{ steps.install-haskell.outputs.stack-root }}/config.yaml
-
-      - name: Check source distribution
+      - name: "Check source distribution"
+        shell: bash
         run: stack sdist .
 
-      - name: Publish `wai-saml2`
-        if: startsWith(github.ref, 'refs/tags/wai-saml2-') && github.event.action == 'released'
-        run: stack upload . --candidate
+      - name: "Publish `wai-saml2`"
+        if: startsWith(github.ref, 'refs/tags/wai-saml2-') && github.event.action == 'published'
+        shell: bash
+        run: stack upload . --candidate --no-save-hackage-creds
         env:
-          HACKAGE_USERNAME: ${{ secrets.HACKAGE_USER }}
-          HACKAGE_PASSWORD: ${{ secrets.HACKAGE_PASSWORD }}
+          HACKAGE_KEY: ${{ secrets.HACKAGE_KEY }}
