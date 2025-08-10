@@ -13,22 +13,23 @@ Response
       MkStatusCode
         { statusCodeValue = Success , statusCodeSubordinate = Nothing }
   , responseSignature =
-      Signature
-        { signatureInfo =
-            SignedInfo
-              { signedInfoCanonicalisationMethod = C14N_EXC_1_0
-              , signedInfoSignatureMethod = RSA_SHA256
-              , signedInfoReference =
-                  Reference
-                    { referenceURI = "_b9917f3478ff3f776cb351547379d0bc"
-                    , referenceDigestMethod = DigestSHA256
-                    , referenceDigestValue =
-                        "z3YXe+aIiyAYbSGqxRiYPwTO38JNZad2WBgqinjiX8g="
-                    }
-              }
-        , signatureValue =
-            "S6IAb+4yYyNVIfnqM7ZIrFSKbzi0RgVqk6qNL0ehzFZhcaArqN/8S0oCDrrc+0B2ygCkpbDKt03/\nvNIxq862VYa1Y39n8w0/eIKc+m3beNS6e+n316o3LCtSTPvgC2kE96Jh44MOUX9z/KIYxXiPGgdi\nnnlxK6L1dZGrMKKBxEFiBJMhFI42gWADyrUz311PDImM+rVhINJT9NyD1i1G++PILLer/BlGwg5n\nwNQHmjt4pV3m+8zMMIrfLjZT/YX8s7+1Xn1Y3bMzo6PnsbvS7OX1YGuN4cPn9f4MLu5Vcn9lWo/r\n+zuZay/pS0mEqTmeOOMGk4BOseiU/hAra5NDgQ=="
-        }
+      Just
+        Signature
+          { signatureInfo =
+              SignedInfo
+                { signedInfoCanonicalisationMethod = C14N_EXC_1_0
+                , signedInfoSignatureMethod = RSA_SHA256
+                , signedInfoReference =
+                    Reference
+                      { referenceURI = "_b9917f3478ff3f776cb351547379d0bc"
+                      , referenceDigestMethod = DigestSHA256
+                      , referenceDigestValue =
+                          "z3YXe+aIiyAYbSGqxRiYPwTO38JNZad2WBgqinjiX8g="
+                      }
+                }
+          , signatureValue =
+              "S6IAb+4yYyNVIfnqM7ZIrFSKbzi0RgVqk6qNL0ehzFZhcaArqN/8S0oCDrrc+0B2ygCkpbDKt03/\nvNIxq862VYa1Y39n8w0/eIKc+m3beNS6e+n316o3LCtSTPvgC2kE96Jh44MOUX9z/KIYxXiPGgdi\nnnlxK6L1dZGrMKKBxEFiBJMhFI42gWADyrUz311PDImM+rVhINJT9NyD1i1G++PILLer/BlGwg5n\nwNQHmjt4pV3m+8zMMIrfLjZT/YX8s7+1Xn1Y3bMzo6PnsbvS7OX1YGuN4cPn9f4MLu5Vcn9lWo/r\n+zuZay/pS0mEqTmeOOMGk4BOseiU/hAra5NDgQ=="
+          }
   , responseAssertion =
       Just
         Assertion
@@ -72,6 +73,7 @@ Response
                 , authnStatementLocality = ""
                 }
           , assertionAttributeStatement = []
+          , assertionSignature = Nothing
           }
   , responseEncryptedAssertion = Nothing
   }

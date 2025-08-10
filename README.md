@@ -1,8 +1,8 @@
 # wai-saml2
 
 ![GitHub](https://img.shields.io/github/license/mbg/wai-saml2)
-![Haskell CI](https://github.com/mbg/wai-saml2/workflows/Haskell/badge.svg?branch=master)
-![stackage-nightly](https://github.com/mbg/wai-saml2/workflows/stackage-nightly/badge.svg)
+[![Haskell](https://github.com/mbg/wai-saml2/actions/workflows/haskell.yml/badge.svg)](https://github.com/mbg/wai-saml2/actions/workflows/haskell.yml)
+[![Stackage Nightly](https://github.com/mbg/wai-saml2/actions/workflows/stackage-nightly.yml/badge.svg)](https://github.com/mbg/wai-saml2/actions/workflows/stackage-nightly.yml)
 [![Hackage](https://img.shields.io/hackage/v/wai-saml2)](https://hackage.haskell.org/package/wai-saml2)
 
 A Haskell library which implements SAML2 assertion validation as WAI middleware. This can be used by a Haskell web application (the service provider, SP) to perform identity provider (IdP) initiated authentication, i.e. SAML2-based authentication where the authentication begins at the IdP-end, the IdP authenticates the user, and then gets the user to submit a SAML2 assertion back to the SP (known as "unsolicited SSO" within e.g. [the Shibboleth project](https://wiki.shibboleth.net/confluence/display/IDP30/UnsolicitedSSOConfiguration#UnsolicitedSSOConfiguration-SAML2.0)).
@@ -31,7 +31,11 @@ You need to have registered your service provider with the identity provider. Yo
 
 ### Configuration
 
-The `saml2Config` function may be used to construct `SAML2Config` values. It expects at least the SP's private key and the IdP's public key as arguments (even when mandatory encryption is disabled) but you should almost certainly customise the configuration further. The private and public keys can be loaded with functions from the `Data.X509` and `Data.X509.File` modules (from the `x509` and `x509-store` packages, respectively):
+How to configure this library depends on your IdP's configuration. You should consult the relevant documentation for your IdP as well as review your SP's configuration on the IdP end. You should almost certainly customise the configuration beyond the defaults described below.
+
+The `saml2Config` function may be used to construct `SAML2Config` values. Configurations constructed with `saml2Config` expect assertions to be encrypted. If you expect assertions to be unencrypted, then you may wish to start with `saml2ConfigNoEncryption` instead.
+
+Since the `saml2Config` function expects encrypted assertions, it needs at least the SP's private key and the IdP's public key as arguments (even when mandatory encryption is disabled). The private and public keys can be loaded with functions from the `Data.X509` and `Data.X509.File` modules (from the `x509` and `x509-store` packages, respectively):
 
 ```haskell
 (saml2Config spPrivateKey idpPublicKey){
@@ -41,11 +45,13 @@ The `saml2Config` function may be used to construct `SAML2Config` values. It exp
 }
 ```
 
-The configuration options are documented in the Haddock documentation for the `Network.Wai.SAML2.Config` module.
+The configuration options (`saml2AssertionPath`, `saml2ExpectedIssuer`, `saml2ExpectedDestination`, etc.) are documented in the Haddock documentation for the `Network.Wai.SAML2.Config` module.
+
+Both `saml2Config` and `saml2ConfigNoEncryption` construct configurations which validate only the response signature. If you need to validate the assertion signature, you must change the `saml2ValidationTarget` property to `ValidateAssertion`. This can also be set to `ValidateEither`, which will require __either__ the response signature __or__ the assertion signature to be valid. Do not use `ValidateEither` unless your IdP requires this.
 
 ### Implementation
 
-Two interfaces to the middleware are provided. See the Haddock documentation for the `Network.Wai.SAML2` module for full usage examples. An example using the `saml2Callback` variant is shown below, where `cfg` is a `SAML2Config` value and `app` is your existing WAI application:
+Two interfaces to the middleware are provided. See the Haddock documentation for the `Network.Wai.SAML2` module for full usage examples. An example using the `saml2Callback` variant is shown below, where `cfg` is a `SAML2Config` value and `mainApp` is your existing WAI application:
 
 ```haskell
 saml2Callback cfg callback mainApp
