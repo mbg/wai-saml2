@@ -55,8 +55,12 @@ data Response = Response {
     responseIssuer :: !T.Text,
     -- | The status of the response.
     responseStatusCode :: !StatusCode,
-    -- | The response signature.
-    responseSignature :: !Signature,
+    -- | The optional response signature. Some IdPs may not include this in the response
+    -- and may instead include a signature in the assertion.
+    -- If so, you should set the @saml2ValidationTarget@ to @ValidateAssertion@.
+    -- The `responseSignature` is expected to be some value and will be validated if
+    -- @saml2ValidationTarget@ is @ValidateResponse@.
+    responseSignature :: !(Maybe Signature),
     -- | The unencrypted assertion.
     --
     -- @since 0.4
@@ -88,9 +92,6 @@ instance FromXML Response where
                     $/  element (saml2Name "EncryptedAssertion")
                     ) >>= parseXML
 
-        signature <- oneOrFail "Signature is required" (
-            cursor $/ element (dsName "Signature") ) >>= parseXML
-
         pure Response{
             responseDestination = T.concat $ attribute "Destination" cursor,
             responseId = T.concat $ attribute "ID" cursor,
@@ -100,7 +101,8 @@ instance FromXML Response where
             responseIssuer = T.concat $
                 cursor $/ element (saml2Name "Issuer") &/ content,
             responseStatusCode = statusCode,
-            responseSignature = signature,
+            responseSignature = listToMaybe $
+                (cursor $/ element (dsName "Signature")) >>= parseXML,
             responseAssertion = assertion,
             responseEncryptedAssertion = encAssertion
         }

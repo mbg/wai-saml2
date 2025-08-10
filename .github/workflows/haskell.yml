@@ -1,31 +1,30 @@
-name: Haskell
+name: "Haskell"
 
 on:
   push:
     branches:
-      - master
       - main
-    tags:
-      - "v*"
     paths:
       - ".github/workflows/haskell.yml"
       - "src/**"
+      - "tests/**"
       - "package.yaml"
       - "stack*.yaml"
   pull_request:
-    branches:
-      - master
-      - main
 
 permissions:
   contents: read
 
 jobs:
   build:
+    name: "Build & Test"
     strategy:
       fail-fast: false
       matrix:
         resolver:
+          - stack-lts-23
+          - stack-lts-22
+          - stack-lts-21
           - stack-lts-20
           - stack-lts-19
           - stack-lts-18
@@ -38,7 +37,7 @@ jobs:
       - name: "Clone repository"
         uses: actions/checkout@v4
 
-      - name: "Build with Stack (${{ matrix.resolver }})"
+      - name: "Build with Stack"
         uses: mbg/actions/stack/build@v0.2
         with:
           resolver: ${{ matrix.resolver }}

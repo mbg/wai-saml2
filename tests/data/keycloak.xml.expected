@@ -10,22 +10,23 @@ Response
       MkStatusCode
         { statusCodeValue = Success , statusCodeSubordinate = Nothing }
   , responseSignature =
-      Signature
-        { signatureInfo =
-            SignedInfo
-              { signedInfoCanonicalisationMethod = C14N_EXC_1_0
-              , signedInfoSignatureMethod = RSA_SHA256
-              , signedInfoReference =
-                  Reference
-                    { referenceURI = "ID_5b1d000b-3a5e-4dfe-aa4e-b7bf1e3efbfd"
-                    , referenceDigestMethod = DigestSHA256
-                    , referenceDigestValue =
-                        "/U47P3hsUf+tUyyglYF8M1u6lbVnHimCthtxusju4mo="
-                    }
-              }
-        , signatureValue =
-            "b9vgIBQ1yNvUYgNmfAyuQJXOJ68PMfRvNAZEa93tnzZXHPEsf7/F49xI6/mlYI/T9pDxYnFcfl7kPMxgz4ssvMjwUEgAR3G3ZrNv4gPMUPmbZnXe0KG8yU9AskK90ya/T11kQfI21cSlA8FrLPTGP2X97yErR10mIDvEJ/m5dWra95cGLx/ntjaSIqNJpVgpHhRxieS4Lw+zeWe/nVuznXQnb8VRhCq18ikL/u23+YhYT3ws3iXQssJ2BosX9JJt0O+X31sIHJIWHsxbI69NLJ782bVDDkI1PNF8MKoa8gSEiLsNSmp3SyXtMPzaRIBguksl9xbnmYmsJDQg6kFVlQ=="
-        }
+      Just
+        Signature
+          { signatureInfo =
+              SignedInfo
+                { signedInfoCanonicalisationMethod = C14N_EXC_1_0
+                , signedInfoSignatureMethod = RSA_SHA256
+                , signedInfoReference =
+                    Reference
+                      { referenceURI = "ID_5b1d000b-3a5e-4dfe-aa4e-b7bf1e3efbfd"
+                      , referenceDigestMethod = DigestSHA256
+                      , referenceDigestValue =
+                          "/U47P3hsUf+tUyyglYF8M1u6lbVnHimCthtxusju4mo="
+                      }
+                }
+          , signatureValue =
+              "b9vgIBQ1yNvUYgNmfAyuQJXOJ68PMfRvNAZEa93tnzZXHPEsf7/F49xI6/mlYI/T9pDxYnFcfl7kPMxgz4ssvMjwUEgAR3G3ZrNv4gPMUPmbZnXe0KG8yU9AskK90ya/T11kQfI21cSlA8FrLPTGP2X97yErR10mIDvEJ/m5dWra95cGLx/ntjaSIqNJpVgpHhRxieS4Lw+zeWe/nVuznXQnb8VRhCq18ikL/u23+YhYT3ws3iXQssJ2BosX9JJt0O+X31sIHJIWHsxbI69NLJ782bVDDkI1PNF8MKoa8gSEiLsNSmp3SyXtMPzaRIBguksl9xbnmYmsJDQg6kFVlQ=="
+          }
   , responseAssertion = Nothing
   , responseEncryptedAssertion =
       Just
