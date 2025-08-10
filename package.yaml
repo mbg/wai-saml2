@@ -12,9 +12,12 @@ description: "A Haskell library which implements SAML2 assertion validation as W
 
 extra-source-files:
   - README.md
-  - CHANGELOG.md
   - tests/data/**
   - tests/data/metadata/**
+
+extra-doc-files:
+  - CHANGELOG.md
+  - SECURITY.md
 
 default-extensions:
   - FlexibleInstances

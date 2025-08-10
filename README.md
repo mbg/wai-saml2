@@ -23,6 +23,8 @@ The library is estimated to be sufficiently robust for use in a production envir
 
 * You __must not__ expose any errors to a client as that could severely compromise the security of the system as attackers may be able to use the errors to narrow down valid SAML responses. You __should__ log and monitor errors though as they may indicate attacks on your system. Ensure that log files containing errors from the SAML2 middleware are stored securely.
 
+See also [SECURITY.md](SECURITY.md) for information about this library's security policy, including how to report a vulnerability if you have discovered one.
+
 ## Usage
 
 ### Preliminaries

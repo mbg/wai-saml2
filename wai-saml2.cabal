@@ -1,4 +1,4 @@
-cabal-version: 1.12
+cabal-version: 1.18
 
 -- This file has been generated from package.yaml by hpack version 0.38.1.
 --
@@ -19,7 +19,6 @@ license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md
-    CHANGELOG.md
     tests/data/azuread-signed-assertion.xml
     tests/data/azuread-signed-response.xml
     tests/data/azuread.crt
@@ -35,6 +34,9 @@ extra-source-files:
     tests/data/metadata/google.xml.expected
     tests/data/metadata/keycloak.xml
     tests/data/metadata/keycloak.xml.expected
+extra-doc-files:
+    CHANGELOG.md
+    SECURITY.md
 
 source-repository head
   type: git
