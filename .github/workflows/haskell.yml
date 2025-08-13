@@ -39,7 +39,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: "Build with Stack"
-        uses: mbg/actions/stack/build@v0.2
+        uses: mbg/actions/stack/build@v0.3
         with:
           resolver: ${{ matrix.resolver }}
           upload-docs: true

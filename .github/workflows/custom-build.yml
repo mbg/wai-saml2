@@ -47,6 +47,6 @@ jobs:
           echo "compiler: ${{ inputs.ghc }}\n" >> custom.yaml
 
       - name: "Build with Stack (custom configuration)"
-        uses: mbg/actions/stack/build@v0.2
+        uses: mbg/actions/stack/build@v0.3
         with:
           resolver: "custom"
