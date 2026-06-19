@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: "Clone repository"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: "Build with Stack nightly"
         uses: mbg/actions/stack/nightly@v0.3
