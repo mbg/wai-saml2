@@ -144,7 +144,7 @@ renderXML AuthnRequest{..} =
         nameIdPolicy = Element
             (saml2pName "NameIDPolicy")
             (Map.fromList
-                [ ("allowCreate"
+                [ ("AllowCreate"
                     , if authnRequestAllowCreate then "true" else "false")
                 , ("Format", showNameIDFormat authnRequestNameIDFormat)
                 ])

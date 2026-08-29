@@ -1,5 +1,9 @@
 # Changelog for `wai-saml2`
 
+## Unreleased changes
+
+- Fixed spelling of attribute AllowCreate in NameIDPolicy
+
 ## 0.7
 
 -   Replaced `x509Certificate` with `x509Certificates` in `IDPSSODescriptor` so that it may have more than one certificate ([#65](https://github.com/mbg/wai-saml2/pull/65) by [@fumieval](https://github.com/fumieval))
