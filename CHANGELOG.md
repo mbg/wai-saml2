@@ -1,8 +1,8 @@
 # Changelog for `wai-saml2`
 
-## Unreleased changes
+## 0.7.1
 
-- Fixed spelling of attribute AllowCreate in NameIDPolicy
+-   Fixed spelling of attribute `AllowCreate` in `NameIDPolicy` ([#88](https://github.com/mbg/wai-saml2/pull/88) by [@Philonous](https://github.com/Philonous))
 
 ## 0.7
 
