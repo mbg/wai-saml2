@@ -38,7 +38,7 @@ jobs:
           echo "version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
 
       - name: "Install Stack"
-        uses: haskell-actions/setup@v2.12.0
+        uses: haskell-actions/setup@v2.12.1
         id: install-haskell
         with:
           stack-no-global: true
