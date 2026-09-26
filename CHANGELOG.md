@@ -1,5 +1,9 @@
 # Changelog for `wai-saml2`
 
+## 0.7.2
+
+-   Increased upper version bound for `crypton`.
+
 ## 0.7.1
 
 -   Fixed spelling of attribute `AllowCreate` in `NameIDPolicy` ([#88](https://github.com/mbg/wai-saml2/pull/88) by [@Philonous](https://github.com/Philonous))
