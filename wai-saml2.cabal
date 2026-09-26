@@ -5,7 +5,7 @@ cabal-version: 1.18
 -- see: https://github.com/sol/hpack
 
 name:           wai-saml2
-version:        0.7.1
+version:        0.7.2
 synopsis:       SAML2 assertion validation as WAI middleware
 description:    A Haskell library which implements SAML2 assertion validation as WAI middleware
 category:       Security
@@ -75,7 +75,7 @@ library
     , bytestring >=0.9 && <0.13
     , c14n >=0.1.0.1 && <1
     , containers >=0.6 && <0.8
-    , crypton <2
+    , crypton <3
     , crypton-x509 <2
     , crypton-x509-store <2
     , data-default-class <1
@@ -112,7 +112,7 @@ test-suite wai-saml2-test
     , bytestring
     , c14n >=0.1.0.1 && <1
     , containers >=0.6 && <0.8
-    , crypton <2
+    , crypton <3
     , crypton-x509 <2
     , crypton-x509-store <2
     , data-default-class <1

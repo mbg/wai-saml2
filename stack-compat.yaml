@@ -1,0 +1,8 @@
+snapshot: nightly-2026-09-26
+
+packages:
+  - .
+
+# Explicit overrides to test compatibility
+extra-deps:
+  - crypton-2.1.2

@@ -12,25 +12,56 @@ on:
       - "stack*.yaml"
   pull_request:
 
-permissions:
-  contents: read
-
 jobs:
+  resolvers:
+    name: "Determine resolvers"
+    runs-on: ubuntu-latest
+
+    permissions: {}
+
+    outputs:
+      resolvers: ${{ steps.resolvers.outputs.resolvers }}
+
+    steps:
+      - name: Get resolver versions
+        id: versions
+        uses: mbg/stackage-action@v1
+        with:
+          noOlderThan: lts-16
+
+      - name: "Print outputs"
+        env:
+          LATEST_LTS: ${{ steps.versions.outputs.lts }}
+          NIGHTLY_LTS: ${{ steps.versions.outputs.nightly }}
+          MINOR_VERSIONS: ${{ steps.versions.outputs.versions }}
+        run: |
+          echo "Latest: $LATEST_LTS"
+          echo "Nightly: $NIGHTLY_LTS"
+          echo "-----"
+          echo "$MINOR_VERSIONS" | jq
+
+      - name: "Extract resolver versions"
+        id: resolvers
+        env:
+          MINOR_VERSIONS: ${{ steps.versions.outputs.versions }}
+        run: |
+          RESOLVERS=$(echo "$MINOR_VERSIONS" | jq -c 'to_entries | map ("stack-" + .key)')
+          echo "$RESOLVERS" | jq
+          echo "resolvers=$RESOLVERS" >> $GITHUB_OUTPUT
+
   build:
     name: "Build & Test"
+
+    permissions:
+      contents: read
+
+    needs:
+      - resolvers
+
     strategy:
       fail-fast: false
       matrix:
-        resolver:
-          - stack-lts-24
-          - stack-lts-23
-          - stack-lts-22
-          - stack-lts-21
-          - stack-lts-20
-          - stack-lts-19
-          - stack-lts-18
-          - stack-lts-17.14
-          - stack-lts-16.1
+        resolver: ${{ fromJson(needs.resolvers.outputs.resolvers) }}
 
     runs-on: ubuntu-latest
 
@@ -39,7 +70,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: "Build with Stack"
-        uses: mbg/actions/stack/build@v0.3
+        uses: mbg/actions/stack/build@v0.4
         with:
           resolver: ${{ matrix.resolver }}
           upload-docs: true

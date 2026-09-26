@@ -25,3 +25,5 @@ cabal.project.local~
 .ghc.environment.*
 
 docs/
+stack.yaml
+stack.yaml.lock
