@@ -12,12 +12,52 @@ on:
       - "stack*.yaml"
   pull_request:
 
-permissions:
-  contents: read
-
 jobs:
+  resolvers:
+    name: "Determine resolvers"
+    runs-on: ubuntu-latest
+
+    permissions: {}
+
+    outputs:
+      resolvers: ${{ steps.resolvers.outputs.resolvers }}
+
+    steps:
+      - name: Get resolver versions
+        id: versions
+        uses: mbg/stackage-action@v1
+        with:
+          noOlderThan: lts-16
+
+      - name: "Print outputs"
+        env:
+          LATEST_LTS: ${{ steps.versions.outputs.lts }}
+          NIGHTLY_LTS: ${{ steps.versions.outputs.nightly }}
+          MINOR_VERSIONS: ${{ steps.versions.outputs.versions }}
+        run: |
+          echo "Latest: $LATEST_LTS"
+          echo "Nightly: $NIGHTLY_LTS"
+          echo "-----"
+          echo "$MINOR_VERSIONS" | jq
+
+      - name: "Extract resolver versions"
+        id: resolvers
+        env:
+          MINOR_VERSIONS: ${{ steps.versions.outputs.versions }}
+        run: |
+          RESOLVERS=$(echo "$MINOR_VERSIONS" | jq -c 'to_entries | map (.value)')
+          echo "$RESOLVERS" | jq
+          echo "resolvers=$RESOLVERS" >> $GITHUB_OUTPUT
+
   build:
     name: "Build & Test"
+
+    permissions:
+      contents: read
+
+    needs:
+      - resolvers
+
     strategy:
       fail-fast: false
       matrix:
