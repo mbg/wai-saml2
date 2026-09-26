@@ -45,7 +45,7 @@ jobs:
         env:
           MINOR_VERSIONS: ${{ steps.versions.outputs.versions }}
         run: |
-          RESOLVERS=$(echo "$MINOR_VERSIONS" | jq -c 'to_entries | map (.value)')
+          RESOLVERS=$(echo "$MINOR_VERSIONS" | jq -c 'to_entries | map ("stack-" + .key)')
           echo "$RESOLVERS" | jq
           echo "resolvers=$RESOLVERS" >> $GITHUB_OUTPUT
 
