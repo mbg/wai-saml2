@@ -80,7 +80,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: "Build with Stack"
-        uses: mbg/actions/stack/build@v0.3
+        uses: mbg/actions/stack/build@v0.4
         with:
           resolver: ${{ matrix.resolver }}
           upload-docs: true
