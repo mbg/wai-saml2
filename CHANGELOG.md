@@ -3,6 +3,7 @@
 ## 0.7.2
 
 -   Increased upper version bound for `crypton`.
+-   Increased upper version bound for `containers`.
 
 ## 0.7.1
 
